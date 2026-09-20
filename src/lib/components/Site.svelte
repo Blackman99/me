@@ -61,7 +61,7 @@
 
 		{#snippet aside(active: boolean)}
 			<div class="graph-panel">
-				<ChainGraph {active} />
+				<ChainGraph {active} {lang} />
 				<div class="callout">
 					<h3>{c.production.highlight.head}</h3>
 					<p>{c.production.highlight.body}</p>

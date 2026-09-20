@@ -3,7 +3,11 @@
 	 * Multi-hop fund-path tracing, drawn from scratch in SVG.
 	 * Nothing here is real customer data — it is a shape, not a screenshot.
 	 */
-	let { active = false }: { active?: boolean } = $props();
+	import type { Lang } from '$lib/content';
+	import { GRAPH_CAPTION } from '$lib/content';
+
+	let { active = false, lang = 'en' }: { active?: boolean; lang?: Lang } = $props();
+	const caption = $derived(GRAPH_CAPTION[lang]);
 
 	type Node = { id: string; x: number; y: number; label: string; kind: 'src' | 'hop' | 'flag' };
 
@@ -80,8 +84,8 @@
 	</svg>
 
 	<figcaption>
-		<span class="verdict">HIGH RISK</span>
-		<span class="detail">3 hops · sanctions list hit</span>
+		<span class="verdict">{caption.verdict}</span>
+		<span class="detail">{caption.detail}</span>
 	</figcaption>
 </figure>
 
