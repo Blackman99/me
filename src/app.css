@@ -1,0 +1,238 @@
+/* ---------------------------------------------------------------- tokens */
+:root {
+	--bg: #08090b;
+	--bg-soft: #0d1014;
+	--surface: #12161c;
+	--surface-2: #171c24;
+	--line: #232a34;
+	--line-soft: #1a2029;
+
+	--fg: #e9ecf1;
+	--fg-dim: #9aa4b2;
+	--fg-faint: #6b7483;
+
+	--accent: #ff6b35;
+	--accent-soft: #ff8c5a;
+	--data: #5eead4;
+	--data-dim: #2dd4bf;
+	--flag: #ff4d6d;
+
+	--display: 'Space Grotesk', ui-sans-serif, system-ui, -apple-system, 'PingFang SC',
+		'Microsoft YaHei', sans-serif;
+	--body: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei',
+		sans-serif;
+	--mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+	--gutter: clamp(1rem, 4vw, 5rem);
+	--maxw: 78rem;
+	--radius: 14px;
+
+	--ease: cubic-bezier(0.22, 1, 0.36, 1);
+	--dur: 0.75s;
+}
+
+/* ------------------------------------------------------------------ base */
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+
+html {
+	background: var(--bg);
+	scroll-behavior: smooth;
+	/* Default to `proximity`: on phones and short windows the sections are
+	   taller than the viewport, and mandatory snapping would strand content. */
+	scroll-snap-type: y proximity;
+	-webkit-text-size-adjust: 100%;
+}
+
+/* Every section is laid out to fit inside a desktop viewport of this size or
+   larger, so hard paging is safe here and nowhere else. */
+@media (min-width: 62rem) and (min-height: 48rem) {
+	html {
+		scroll-snap-type: y mandatory;
+	}
+}
+
+body {
+	margin: 0;
+	background: var(--bg);
+	color: var(--fg);
+	font-family: var(--body);
+	font-size: clamp(0.95rem, 0.9rem + 0.25vw, 1.0625rem);
+	line-height: 1.65;
+	-webkit-font-smoothing: antialiased;
+	overflow-x: clip;
+}
+
+h1,
+h2,
+h3,
+h4 {
+	font-family: var(--display);
+	font-weight: 600;
+	line-height: 1.08;
+	letter-spacing: -0.025em;
+	margin: 0;
+	text-wrap: balance;
+}
+
+p {
+	margin: 0;
+	text-wrap: pretty;
+}
+
+a {
+	color: inherit;
+	text-decoration: none;
+}
+
+:focus-visible {
+	outline: 2px solid var(--accent);
+	outline-offset: 3px;
+	border-radius: 4px;
+}
+
+::selection {
+	background: var(--accent);
+	color: #fff;
+}
+
+.sr-only {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip-path: inset(50%);
+	white-space: nowrap;
+}
+
+/* --------------------------------------------------------------- layout */
+.section {
+	position: relative;
+	min-height: 100svh;
+	scroll-snap-align: start;
+	scroll-snap-stop: normal;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	padding: clamp(4.25rem, 8.5vh, 6rem) var(--gutter) clamp(2.75rem, 5.5vh, 4rem);
+	border-top: 1px solid var(--line-soft);
+}
+
+.section:first-of-type {
+	border-top: 0;
+}
+
+.shell {
+	width: 100%;
+	max-width: var(--maxw);
+	margin-inline: auto;
+}
+
+.kicker {
+	font-family: var(--mono);
+	font-size: 0.72rem;
+	letter-spacing: 0.18em;
+	text-transform: uppercase;
+	color: var(--accent);
+	display: flex;
+	align-items: center;
+	gap: 0.7rem;
+}
+
+.kicker::before {
+	content: '';
+	width: 1.75rem;
+	height: 1px;
+	background: var(--accent);
+	flex: none;
+}
+
+.section-title {
+	font-size: clamp(1.75rem, 1.15rem + 2.35vw, 2.9rem);
+	margin-top: 0.85rem;
+	max-width: 20ch;
+}
+
+.lede {
+	color: var(--fg-dim);
+	font-size: clamp(0.95rem, 0.92rem + 0.3vw, 1.08rem);
+	max-width: 60ch;
+	margin-top: 0.85rem;
+}
+
+/* --------------------------------------------------- scroll-in reveals */
+[data-reveal] {
+	opacity: 0;
+	transform: translate3d(0, 1.75rem, 0);
+	transition:
+		opacity var(--dur) var(--ease),
+		transform var(--dur) var(--ease);
+	transition-delay: calc(var(--i, 0) * 70ms);
+	will-change: opacity, transform;
+}
+
+[data-reveal].in-view {
+	opacity: 1;
+	transform: none;
+}
+
+[data-reveal='fade'] {
+	transform: none;
+}
+
+[data-reveal='left'] {
+	transform: translate3d(-1.5rem, 0, 0);
+}
+
+[data-reveal='scale'] {
+	transform: scale(0.965);
+}
+
+/* -------------------------------------------------- reduced motion path */
+@media (prefers-reduced-motion: reduce) {
+	html {
+		scroll-behavior: auto;
+		scroll-snap-type: none;
+	}
+
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.001ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.001ms !important;
+	}
+
+	[data-reveal] {
+		opacity: 1 !important;
+		transform: none !important;
+	}
+}
+
+/* Short viewports (landscape phones, split screens) get a normal document
+   flow instead of forced paging. */
+@media (max-height: 34rem) {
+	html {
+		scroll-snap-type: none;
+	}
+
+	.section {
+		min-height: auto;
+	}
+}
+
+@media print {
+	html {
+		scroll-snap-type: none;
+	}
+
+	.section {
+		min-height: auto;
+		page-break-inside: avoid;
+	}
+}

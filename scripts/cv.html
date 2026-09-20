@@ -1,0 +1,449 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>Dongsheng Zhao — AI Full-Stack Engineer</title>
+		<style>
+			@page {
+				size: A4;
+				margin: 13mm 14mm;
+			}
+
+			:root {
+				--ink: #16181d;
+				--dim: #4d545f;
+				--faint: #7b8391;
+				--rule: #d7dbe2;
+				--accent: #c2410c;
+			}
+
+			* {
+				box-sizing: border-box;
+			}
+
+			body {
+				margin: 0;
+				font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+				font-size: 9.4pt;
+				line-height: 1.46;
+				color: var(--ink);
+				-webkit-print-color-adjust: exact;
+				print-color-adjust: exact;
+			}
+
+			h1 {
+				margin: 0;
+				font-size: 21pt;
+				letter-spacing: -0.02em;
+			}
+
+			.title {
+				margin: 2pt 0 0;
+				font-size: 10.5pt;
+				color: var(--accent);
+				font-weight: 600;
+				letter-spacing: 0.01em;
+			}
+
+			.contact {
+				margin: 6pt 0 0;
+				font-size: 8.6pt;
+				color: var(--dim);
+			}
+
+			.contact a {
+				color: var(--dim);
+				text-decoration: none;
+			}
+
+			.contact span + span::before {
+				content: '  ·  ';
+				color: var(--faint);
+			}
+
+			.avail {
+				margin: 7pt 0 0;
+				padding: 4pt 7pt;
+				font-size: 8.8pt;
+				background: #fdf3ee;
+				border-left: 2.5pt solid var(--accent);
+				color: #7c2d12;
+			}
+
+			.summary {
+				margin: 9pt 0 0;
+				color: var(--dim);
+			}
+
+			h2 {
+				margin: 13pt 0 5pt;
+				font-size: 8.4pt;
+				letter-spacing: 0.14em;
+				text-transform: uppercase;
+				color: var(--accent);
+				border-bottom: 0.6pt solid var(--rule);
+				padding-bottom: 2.5pt;
+			}
+
+			.role {
+				margin-top: 8pt;
+				page-break-inside: avoid;
+			}
+
+			.role:first-of-type {
+				margin-top: 0;
+			}
+
+			.role-head {
+				display: flex;
+				justify-content: space-between;
+				align-items: baseline;
+				gap: 10pt;
+			}
+
+			.role-head strong {
+				font-size: 9.9pt;
+			}
+
+			.org {
+				color: var(--dim);
+				font-weight: 400;
+			}
+
+			.when {
+				flex: none;
+				font-size: 8.4pt;
+				color: var(--faint);
+				white-space: nowrap;
+			}
+
+			ul {
+				margin: 3.5pt 0 0;
+				padding-left: 11pt;
+			}
+
+			li {
+				margin-bottom: 1.8pt;
+				color: var(--dim);
+			}
+
+			li strong {
+				color: var(--ink);
+				font-weight: 600;
+			}
+
+			.oss-item {
+				margin-top: 5.5pt;
+				page-break-inside: avoid;
+			}
+
+			.oss-item .role-head strong {
+				font-size: 9.5pt;
+			}
+
+			.stars {
+				color: var(--accent);
+				font-weight: 600;
+				font-size: 8.4pt;
+			}
+
+			.oss-item p {
+				margin: 1.5pt 0 0;
+				color: var(--dim);
+			}
+
+			table.skills {
+				width: 100%;
+				border-collapse: collapse;
+			}
+
+			table.skills td {
+				vertical-align: top;
+				padding: 2pt 0;
+			}
+
+			table.skills td:first-child {
+				width: 68pt;
+				color: var(--faint);
+				font-weight: 600;
+				font-size: 8.4pt;
+				letter-spacing: 0.02em;
+				padding-right: 8pt;
+			}
+
+			table.skills td:last-child {
+				color: var(--dim);
+			}
+
+			.foot {
+				margin-top: 11pt;
+				padding-top: 5pt;
+				border-top: 0.6pt solid var(--rule);
+				font-size: 8.2pt;
+				color: var(--faint);
+				display: flex;
+				justify-content: space-between;
+				gap: 10pt;
+			}
+		</style>
+	</head>
+	<body>
+		<header>
+			<h1>Dongsheng Zhao</h1>
+			<p class="title">AI Full-Stack Engineer · 9 years</p>
+			<p class="contact">
+				<span><a href="mailto:dongshengzhao47@gmail.com">dongshengzhao47@gmail.com</a></span>
+				<span><a href="https://github.com/Blackman99">github.com/Blackman99</a></span>
+				<span><a href="https://dongsheng-blog.netlify.app">dongsheng-blog.netlify.app</a></span>
+				<span>Hefei, China · UTC+8</span>
+			</p>
+			<p class="avail">
+				<strong>Open to full-time remote or contract.</strong> Based UTC+8 — a full European
+				working day overlaps, as does US East in my evening. Working English (CET-6).
+			</p>
+			<p class="summary">
+				Nine years of web and systems engineering, now spent putting LLMs inside production
+				software. I built the AI layer of a crypto compliance platform — Claude and OpenAI drafting
+				regulatory reports and rule sets — along with the multi-chain risk engine beneath it, the
+				public API around it and the Next.js workbench on top, owning design, build, test and cloud
+				deployment end to end. Outside work I created Sveltepress (534★) and write open-source
+				tooling for coding agents; ~714 GitHub stars across 79 public repositories.
+			</p>
+		</header>
+
+		<h2>Experience</h2>
+
+		<div class="role">
+			<div class="role-head">
+				<strong>AI Full-Stack Engineer <span class="org">· Crypto AML/KYT Compliance SaaS (name on request)</span></strong>
+				<span class="when">Jul 2025 – present</span>
+			</div>
+			<ul>
+				<li>
+					<strong>LLM-generated regulatory output.</strong> Fed on-chain risk data and rule hits to
+					Claude and OpenAI to draft STR/SAR reports, compliance policies and rule-set proposals,
+					replacing a step previously written by hand.
+				</li>
+				<li>
+					<strong>KYA/KYT screening engine.</strong> Designed and implemented multi-hop fund-path
+					tracing that identifies high-risk counterparties, sanctions and blacklist hits, and
+					returns a graded risk verdict.
+				</li>
+				<li>
+					<strong>Configurable rule-set system.</strong> Path-level detection routed by scenario —
+					deposit, withdrawal, CDD, ongoing monitoring — so policy changes ship without code changes.
+				</li>
+				<li>
+					<strong>Path-investigation rewrite.</strong> Replaced whole-graph upload with server-side
+					detection plus gzipped parallel paging; single-screening latency dropped sharply.
+				</li>
+				<li>
+					<strong>Public v2/v3 API.</strong> Async polling with API-key auth, address-monitoring
+					alerts, webhooks and quota billing, over Ethereum, Tron and Base via multiple on-chain data
+					providers and EVM RPC.
+				</li>
+				<li>
+					<strong>Compliance workbench.</strong> Next.js 16, React 19 and TypeScript — screening,
+					batch checks, graph exploration, reporting and monitoring, on SWR and Zustand.
+				</li>
+				<li>
+					<strong>Platform and delivery.</strong> Led an end-to-end cloud migration; built CI/CD on
+					GitHub Actions with atomic Go binary swaps, layered backups and second-scale rollback; own
+					production incident response.
+				</li>
+			</ul>
+		</div>
+
+		<div class="role">
+			<div class="role-head">
+				<strong>Frontend Technical Expert <span class="org">· Yiyi Data Technology, Hefei</span></strong>
+				<span class="when">Jun 2024 – Jun 2025</span>
+			</div>
+			<ul>
+				<li>
+					Planned and led the core of an in-house low-code platform, including a bespoke domain
+					design language; internal delivery efficiency improved by roughly 30%.
+				</li>
+				<li>
+					Hardened the platform architecture for stability and extensibility and drove its adoption
+					across internal projects, cutting duplicated work and cost.
+				</li>
+			</ul>
+		</div>
+
+		<div class="role">
+			<div class="role-head">
+				<strong>Software Development Manager <span class="org">· GE Healthcare China</span></strong>
+				<span class="when">Oct 2023 – May 2024</span>
+			</div>
+			<ul>
+				<li>
+					Technical management and core feature delivery for the x20 system and the China AW medical
+					imaging platform.
+				</li>
+			</ul>
+		</div>
+
+		<div class="role">
+			<div class="role-head">
+				<strong>Senior Development Engineer <span class="org">· Bilibili (MissEvan)</span></strong>
+				<span class="when">Oct 2022 – Jul 2023</span>
+			</div>
+			<ul>
+				<li>
+					Product feature development and frontend platform iteration; maintained the internal
+					component and utility libraries used across the team.
+				</li>
+			</ul>
+		</div>
+
+		<div class="role">
+			<div class="role-head">
+				<strong>Frontend Engineer <span class="org">· Oufei Technology, Beijing</span></strong>
+				<span class="when">Aug 2021 – Sep 2022</span>
+			</div>
+			<ul>
+				<li>
+					Built overseas lending H5 flows, the business back-office and a data aggregation platform
+					supporting a loan book over US$100M and more than a million registered merchants.
+				</li>
+				<li>
+					Cut build time by 50% and doubled dev-server start and HMR speed; production Lighthouse
+					scores 90+ across categories.
+				</li>
+			</ul>
+		</div>
+
+		<div class="role">
+			<div class="role-head">
+				<strong>Frontend Engineer <span class="org">· AsiaInfo Technologies</span></strong>
+				<span class="when">Sep 2019 – Aug 2021</span>
+			</div>
+			<ul>
+				<li>
+					Owned stack selection, project scaffolding, core page development and CI; built the shared
+					libraries and components the department standardised on.
+				</li>
+			</ul>
+		</div>
+
+		<div class="role">
+			<div class="role-head">
+				<strong>Web Frontend Developer <span class="org">· Uinnova, Beijing</span></strong>
+				<span class="when">Oct 2017 – Sep 2019</span>
+			</div>
+			<ul>
+				<li>
+					Architecture selection and setup, high-fidelity page implementation, CI/CD and cross-platform
+					compatibility; grew corporate site PV/UV.
+				</li>
+			</ul>
+		</div>
+
+		<h2>Open Source</h2>
+
+		<div class="oss-item">
+			<div class="role-head">
+				<strong>Sveltepress <span class="org">· creator and maintainer · sveltepress.site</span></strong>
+				<span class="when"><span class="stars">534★</span> · since Aug 2022</span>
+			</div>
+			<p>
+				Content-first site builder on SvelteKit: SSR/SSG/CSR, Svelte 5 components written directly in
+				Markdown, versioning, i18n, Pagefind search, customisable themes with a default theme, and a
+				fully typed API end to end.
+			</p>
+		</div>
+
+		<div class="oss-item">
+			<div class="role-head">
+				<strong>agent-feishu-channel <span class="org">· author · TypeScript</span></strong>
+				<span class="when"><span class="stars">48★</span></span>
+			</div>
+			<p>
+				Bridges Claude Code and Codex sessions into a Feishu (Lark) bot — session lifecycle management
+				plus two-way relay of messages and tool calls, so a coding agent can be driven from chat.
+			</p>
+		</div>
+
+		<div class="oss-item">
+			<div class="role-head">
+				<strong>codsh <span class="org">· author · TypeScript</span></strong>
+				<span class="when"><span class="stars">5★</span></span>
+			</div>
+			<p>
+				Terminal coding agent built on the DeepSeek harness, with its own tool-call loop and
+				interaction design drawing on mainstream agent CLIs.
+			</p>
+		</div>
+
+		<div class="oss-item">
+			<div class="role-head">
+				<strong>Svelte ecosystem components <span class="org">· author and maintainer</span></strong>
+				<span class="when">~714★ total · 79 repos</span>
+			</div>
+			<p>
+				svelte5plus-calendar — zero-dependency full calendar (month/week/day/year/agenda views, drag
+				and drop, recurring events, i18n, dark mode); svelte-json-discovery — the discovery.js JSON
+				struct view as a standalone Svelte 5 component. Also maintains Casual-UI and
+				headless-wysiwyg.
+			</p>
+		</div>
+
+		<h2>Skills</h2>
+		<table class="skills">
+			<tr>
+				<td>AI</td>
+				<td>
+					Production LLM applications (Claude / OpenAI / DeepSeek) · prompting and structured output ·
+					tool calling and agent loops · Claude Code and Codex workflow integration
+				</td>
+			</tr>
+			<tr>
+				<td>Languages</td>
+				<td>TypeScript / JavaScript · Go · Rust · Java · Python</td>
+			</tr>
+			<tr>
+				<td>Frontend</td>
+				<td>
+					React 19 / Next.js · Svelte 5 / SvelteKit · Vue 3 · Vite / Rollup / Nx · Tauri desktop and
+					mobile hybrid · D3 / ECharts
+				</td>
+			</tr>
+			<tr>
+				<td>Backend</td>
+				<td>
+					Node.js · Go · PostgreSQL / MySQL · Redis · REST and async job pipelines · LLM integration
+				</td>
+			</tr>
+			<tr>
+				<td>Infra</td>
+				<td>
+					AWS · Tencent Cloud · Docker · GitHub Actions / Jenkins · Linux (Arch / Manjaro) · systemd
+					deployment with rollback
+				</td>
+			</tr>
+			<tr>
+				<td>Other</td>
+				<td>
+					Algorithms and data structures · EVM and Tron on-chain data · English for working meetings
+					(CET-6)
+				</td>
+			</tr>
+		</table>
+
+		<h2>Education</h2>
+		<table class="skills">
+			<tr>
+				<td>2014 – 2018</td>
+				<td>
+					<strong>West Anhui University</strong> — BEng, Electronic and Information Engineering
+				</td>
+			</tr>
+		</table>
+
+		<div class="foot">
+			<span>dongshengzhao47@gmail.com · github.com/Blackman99</span>
+			<span>Open to full-time remote or contract · UTC+8</span>
+		</div>
+	</body>
+</html>

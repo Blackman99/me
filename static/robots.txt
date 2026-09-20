@@ -1,0 +1,5 @@
+# Allow crawling everything.
+User-agent: *
+Disallow:
+
+Sitemap: https://blackman99.github.io/me/sitemap.xml
