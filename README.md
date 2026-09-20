@@ -12,6 +12,7 @@ Chinese, built with SvelteKit and deployed as a static site to GitHub Pages.
 | --- | --- |
 | `src/lib/content.ts` | Every string on the site, in both languages. Edit copy here and nowhere else. |
 | `src/lib/components/` | The sections and the three hand-drawn visuals (chain graph, terminal, Markdown → Svelte). |
+| `src/lib/aurora.ts` | The hero's WebGL backdrop — one fragment shader, no dependencies. |
 | `src/lib/reveal.ts` | The IntersectionObserver action behind the scroll-in animations. |
 | `src/app.css` | Design tokens, the full-screen paging rules and the reduced-motion fallback. |
 | `scripts/cv.html` | Source of the English CV. |
@@ -61,14 +62,35 @@ only at that size. Anywhere smaller — phones, short windows — it falls back 
 `proximity`, because mandatory snapping on a section taller than the viewport
 strands the content nobody can scroll to.
 
-**Animation is CSS first.** Reveals run on one IntersectionObserver action;
-the progress bar uses `animation-timeline: scroll()` behind an `@supports` guard
-and is simply absent where that is unsupported. No animation library, no WebGL.
-Measured on the built site: LCP ≈ 0.44 s, CLS 0, ~60 fps while scrolling, 236 KiB
-uncompressed over 16 requests.
+**The hero backdrop is a shader, and it is optional.** `src/lib/aurora.ts` is a
+single domain-warped noise fragment shader on one triangle — raw WebGL, no scene
+library, 5.4 KB. It is imported dynamically after the `load` event, so it is
+never on the critical path, and it renders at half resolution because the field
+is low-frequency enough that nobody can tell.
+
+It only runs on a viewport of at least 992 px with a fine pointer, at least four
+cores, and no reduced-motion preference. Phones, tablets and anyone who asked for
+less motion get the CSS backdrop underneath instead and never download the
+module at all: 11 JS chunks on desktop, 10 everywhere else.
+
+An IntersectionObserver pauses it the moment the hero leaves the screen —
+measured as exactly zero `drawArrays` calls while any other section is in view —
+and `visibilitychange` pauses it for a backgrounded tab.
+
+**Everything else is CSS.** Reveals run on one IntersectionObserver action; the
+scroll progress bar and the hero's scroll-away both use scroll-linked animation
+behind an `@supports` guard and are simply absent where that is unsupported. The
+headline wipe, its specular sheen and the travelling highlight on the badge are
+plain keyframes. The only JavaScript animation outside the shader is the stat
+count-up, and the stats reserve their final width so it cannot shift the layout.
+
+Measured on the built site: LCP ≈ 0.46 s, CLS 0, ~60 fps throughout, 61 KiB
+transferred on desktop and 58 KiB on a phone.
 
 **`prefers-reduced-motion` is a real path, not an afterthought.** It disables
-snapping, collapses every transition and forces all revealed content visible.
+snapping, collapses every transition, forces all revealed content visible, drops
+the headline wipe and sheen, fills the stats in immediately, and skips the shader
+entirely.
 
 **The Sveltepress demo is a live Svelte component**, not a screenshot of one —
 the counter in the "Open source" section really counts.

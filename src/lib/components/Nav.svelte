@@ -93,8 +93,10 @@
 		justify-content: space-between;
 		gap: 1.25rem;
 		padding: 0.45rem var(--gutter);
-		background: color-mix(in srgb, var(--bg) 78%, transparent);
-		backdrop-filter: blur(14px);
+		/* Opaque enough to stay readable over the hero shader; everywhere else
+		   the page behind it is flat, so nothing is lost. */
+		background: color-mix(in srgb, var(--bg) 93%, transparent);
+		backdrop-filter: blur(18px) saturate(140%);
 		border-bottom: 1px solid var(--line-soft);
 	}
 

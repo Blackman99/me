@@ -1,12 +1,94 @@
 <script lang="ts">
+	import type { Action } from 'svelte/action';
 	import type { SiteContent } from '$lib/content';
 	import { EMAIL } from '$lib/content';
+	import type { Aurora } from '$lib/aurora';
 
 	let { c }: { c: SiteContent } = $props();
+
+	let heroEl: HTMLElement;
+	let canvas = $state<HTMLCanvasElement>();
+	let glOn = $state(false);
+
+	const reduced = () =>
+		typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+	/**
+	 * The shader is for pointer-driven desktops only. Phones and tablets keep
+	 * the CSS backdrop: it looks close enough and costs nothing on a battery.
+	 */
+	function wantsShader() {
+		if (typeof matchMedia === 'undefined' || reduced()) return false;
+		if (!matchMedia('(min-width: 62rem)').matches) return false;
+		if (!matchMedia('(pointer: fine)').matches) return false;
+		return (navigator.hardwareConcurrency ?? 4) >= 4;
+	}
+
+	$effect(() => {
+		const el = canvas;
+		if (!el || !wantsShader()) return;
+
+		let aurora: Aurora | null = null;
+		let io: IntersectionObserver | null = null;
+		let cancelled = false;
+
+		async function boot() {
+			const { startAurora } = await import('$lib/aurora');
+			if (cancelled) return;
+			aurora = startAurora(el!);
+			if (!aurora) return;
+			glOn = true;
+			aurora.play();
+			// Stop drawing the moment the hero leaves the screen — there are six
+			// more sections below and none of them need a GPU.
+			io = new IntersectionObserver(
+				([entry]) => (entry.isIntersecting ? aurora?.play() : aurora?.pause()),
+				{ threshold: 0.02 }
+			);
+			io.observe(heroEl);
+		}
+
+		// Wait for load so the shader never competes with the largest paint.
+		const kick = () => requestAnimationFrame(boot);
+		if (document.readyState === 'complete') kick();
+		else window.addEventListener('load', kick, { once: true });
+
+		return () => {
+			cancelled = true;
+			window.removeEventListener('load', kick);
+			io?.disconnect();
+			aurora?.stop();
+		};
+	});
+
+	/** Ticks a stat up to its final value without ever changing its width. */
+	const countUp: Action<HTMLElement, string> = (node, value) => {
+		const target = Number.parseInt(value ?? '', 10);
+		if (!Number.isFinite(target) || reduced()) {
+			node.textContent = value ?? '';
+			return;
+		}
+
+		let raf = 0;
+		const start = performance.now();
+		const DUR = 1100;
+
+		const step = (now: number) => {
+			const t = Math.min((now - start) / DUR, 1);
+			const eased = 1 - Math.pow(1 - t, 4);
+			node.textContent = String(Math.round(target * eased));
+			if (t < 1) raf = requestAnimationFrame(step);
+		};
+
+		node.textContent = '0';
+		raf = requestAnimationFrame(step);
+		return { destroy: () => cancelAnimationFrame(raf) };
+	};
 </script>
 
-<section class="section hero" id="top">
-	<div class="backdrop" aria-hidden="true">
+<section class="section hero" id="top" bind:this={heroEl}>
+	<div class="backdrop" class:gl={glOn} aria-hidden="true">
+		<canvas bind:this={canvas}></canvas>
 		<span class="blob b1"></span>
 		<span class="blob b2"></span>
 		<span class="blob b3"></span>
@@ -18,7 +100,10 @@
 			<span class="pip"></span>{c.hero.eyebrow}
 		</p>
 
-		<h1 style="--i:1">{c.hero.name}</h1>
+		<span class="name" style="--i:1">
+			<h1>{c.hero.name}</h1>
+			<span class="sheen" aria-hidden="true">{c.hero.name}</span>
+		</span>
 		<p class="role" style="--i:2">{c.hero.title}</p>
 		<p class="lede hero-lede" style="--i:3">{c.hero.lede}</p>
 
@@ -45,7 +130,7 @@
 		<dl class="stats" style="--i:6">
 			{#each c.hero.stats as stat (stat.label)}
 				<div>
-					<dt>{stat.value}</dt>
+					<dt style="--len:{stat.value.length}"><span use:countUp={stat.value}>{stat.value}</span></dt>
 					<dd>{stat.label}</dd>
 				</div>
 			{/each}
@@ -73,12 +158,36 @@
 		pointer-events: none;
 	}
 
+	canvas {
+		position: absolute;
+		inset: 0;
+		display: block;
+		width: 100%;
+		height: 100%;
+		opacity: 0;
+		transition: opacity 1.2s var(--ease);
+	}
+
+	.gl canvas {
+		opacity: 1;
+	}
+
+	/* Once the shader is painting, the CSS blobs would only muddy it. */
+	.gl .blob {
+		opacity: 0;
+	}
+
+	.gl .grid {
+		opacity: 0.6;
+	}
+
 	.blob {
 		position: absolute;
 		border-radius: 50%;
 		filter: blur(90px);
 		opacity: 0.4;
 		will-change: transform;
+		transition: opacity 1.2s var(--ease);
 	}
 
 	.b1 {
@@ -109,6 +218,7 @@
 	}
 
 	.grid {
+		transition: opacity 1.2s var(--ease);
 		position: absolute;
 		inset: 0;
 		background-image:
@@ -132,6 +242,7 @@
 	}
 
 	.eyebrow {
+		position: relative;
 		display: inline-flex;
 		align-items: center;
 		gap: 0.6rem;
@@ -146,6 +257,32 @@
 		margin: 0;
 	}
 
+	.eyebrow::after {
+		content: '';
+		position: absolute;
+		inset: -1px;
+		border-radius: inherit;
+		padding: 1px;
+		background: conic-gradient(
+			from var(--spin),
+			transparent 0deg,
+			var(--accent) 32deg,
+			rgb(255 255 255 / 0.9) 46deg,
+			transparent 82deg,
+			transparent 360deg
+		);
+		-webkit-mask:
+			linear-gradient(#000 0 0) content-box,
+			linear-gradient(#000 0 0);
+		-webkit-mask-composite: xor;
+		mask:
+			linear-gradient(#000 0 0) content-box,
+			linear-gradient(#000 0 0);
+		mask-composite: exclude;
+		animation: spin 4.2s linear infinite;
+		pointer-events: none;
+	}
+
 	.pip {
 		width: 6px;
 		height: 6px;
@@ -155,15 +292,48 @@
 		animation: pulse 2.4s ease-out infinite;
 	}
 
-	h1 {
+	.name {
+		position: relative;
+		display: block;
+		margin-top: 0.9rem;
+	}
+
+	/* The sheen is a second copy of the name sitting exactly on top of the
+	   first, so both need identical metrics. */
+	.name h1,
+	.name .sheen {
+		font-family: var(--display);
 		font-size: clamp(2.8rem, 1.3rem + 7.4vw, 7rem);
 		font-weight: 700;
+		line-height: 1.08;
 		letter-spacing: -0.045em;
-		margin-top: 0.9rem;
-		background: linear-gradient(170deg, #fff 22%, #9aa4b2 96%);
+		margin: 0;
 		-webkit-background-clip: text;
 		background-clip: text;
 		color: transparent;
+	}
+
+	.name h1 {
+		background-image: linear-gradient(170deg, #fff 22%, #9aa4b2 96%);
+		clip-path: inset(0 100% 0 0);
+		animation: wipe 1.15s var(--ease) 0.22s forwards;
+	}
+
+	.name .sheen {
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+		user-select: none;
+		background-image: linear-gradient(
+			100deg,
+			transparent 42%,
+			rgb(255 255 255 / 0.95) 50%,
+			transparent 58%
+		);
+		background-size: 260% 100%;
+		background-position: 155% 0;
+		opacity: 0;
+		animation: sheen 1.4s var(--ease) 0.72s forwards;
 	}
 
 	.role {
@@ -292,6 +462,11 @@
 		font-variant-numeric: tabular-nums;
 	}
 
+	dt span {
+		display: inline-block;
+		min-width: calc(var(--len, 1) * 1ch);
+	}
+
 	dd {
 		margin: 0.15rem 0 0;
 		font-family: var(--mono);
@@ -348,6 +523,49 @@
 		}
 	}
 
+	@keyframes wipe {
+		to {
+			clip-path: inset(0 -0.12em 0 0);
+		}
+	}
+
+	@keyframes sheen {
+		0% {
+			background-position: 155% 0;
+			opacity: 0;
+		}
+		14% {
+			opacity: 1;
+		}
+		86% {
+			opacity: 1;
+		}
+		100% {
+			background-position: -75% 0;
+			opacity: 0;
+		}
+	}
+
+	@keyframes spin {
+		to {
+			--spin: 360deg;
+		}
+	}
+
+	@keyframes hero-exit {
+		to {
+			opacity: 0;
+			transform: translateY(-3.25rem) scale(0.955);
+		}
+	}
+
+	@keyframes backdrop-exit {
+		to {
+			opacity: 0.3;
+			transform: scale(1.1);
+		}
+	}
+
 	@keyframes drift-a {
 		to {
 			transform: translate3d(14vmax, 7vmax, 0) scale(1.15);
@@ -397,6 +615,24 @@
 		}
 	}
 
+	/* The hero drifts away as it is scrolled off. Scroll-linked animation is
+	   still patchy across browsers, so this is enhancement, never structure. */
+	@supports (animation-timeline: view()) {
+		@media (prefers-reduced-motion: no-preference) {
+			.hero .shell {
+				animation: hero-exit linear both;
+				animation-timeline: view();
+				animation-range: exit 0% exit 88%;
+			}
+
+			.hero .backdrop {
+				animation: backdrop-exit linear both;
+				animation-timeline: view();
+				animation-range: exit 0% exit 100%;
+			}
+		}
+	}
+
 	/* -------------------------------------------------------- responsive */
 	@media (max-width: 44rem) {
 		/* The availability line wraps here, which would strand the separator. */
@@ -441,8 +677,19 @@
 		.blob,
 		.pip,
 		.beacon,
-		.bead {
+		.bead,
+		.eyebrow::after {
 			animation: none;
+		}
+
+		.name h1 {
+			clip-path: none;
+			animation: none;
+		}
+
+		.name .sheen,
+		.eyebrow::after {
+			display: none;
 		}
 
 		.bead {

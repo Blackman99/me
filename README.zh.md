@@ -11,6 +11,7 @@ English version: [README.md](./README.md)
 | --- | --- |
 | `src/lib/content.ts` | 站点全部文案，中英各一份。改文案只改这里。 |
 | `src/lib/components/` | 各分屏，以及三块手写图形（链路图、终端、Markdown → Svelte）。 |
+| `src/lib/aurora.ts` | 首屏的 WebGL 背景——一个片元着色器，零依赖。 |
 | `src/lib/reveal.ts` | 滚动入场动画背后的 IntersectionObserver action。 |
 | `src/app.css` | 设计变量、整屏分屏规则、reduced-motion 降级。 |
 | `scripts/cv.html` | 英文 CV 的源文件。 |
@@ -58,13 +59,28 @@ env:
 （手机、矮窗口）退回 `proximity`——因为当一屏比视口还高时，强制吸附会把
 内容卡住，用户永远滚不到。
 
-**动效以 CSS 为主。** 入场动画统一走一个 IntersectionObserver action；
-顶部进度条用 `animation-timeline: scroll()`，外面包了 `@supports`，
-不支持的浏览器上直接不出现。没有动画库，没有 WebGL。
-构建产物实测：LCP ≈ 0.44s，CLS 0，滚动全程约 60fps，16 个请求共 236 KiB（未压缩）。
+**首屏背景是着色器，而且是可选的。** `src/lib/aurora.ts` 是一个域扭曲噪声片元
+着色器，画在一个三角形上——裸 WebGL，不引场景库，5.4 KB。它在 `load` 事件之后
+动态 import，因此永远不在关键路径上；并且以一半分辨率渲染，因为这个场足够低频，
+放大回去看不出区别。
+
+它只在视口宽度 ≥ 992px、精确指针、CPU 核心数 ≥ 4、且用户未要求减少动效时才启用。
+手机、平板以及选择了减少动效的人，看到的是底下那层 CSS 背景，**并且根本不会下载
+这个模块**：桌面 11 个 JS chunk，其余环境 10 个。
+
+IntersectionObserver 会在首屏离开视口的瞬间暂停它——实测此时 `drawArrays`
+调用数为 0——`visibilitychange` 则负责在标签页切到后台时暂停。
+
+**其余全是 CSS。** 入场动画统一走一个 IntersectionObserver action；顶部滚动进度条
+与首屏的滚动退场都使用滚动驱动动画，外面包了 `@supports`，不支持的浏览器上直接
+不出现。标题的擦除揭示、高光扫过、徽章上的流动描边都是普通 keyframes。着色器之外
+唯一的 JS 动画是数字滚动，而统计数字预留了最终宽度，因此不会引起布局偏移。
+
+构建产物实测：LCP ≈ 0.46s，CLS 0，全程约 60fps，桌面传输 61 KiB，手机 58 KiB。
 
 **`prefers-reduced-motion` 是一条真实分支，不是补丁。** 它会关掉吸附、
-把所有过渡压到 0，并强制显示全部入场内容。
+把所有过渡压到 0、强制显示全部入场内容、去掉标题擦除与高光、让统计数字直接显示
+最终值，并完全跳过着色器。
 
 **Sveltepress 那块演示里的组件是真的 Svelte 组件**，不是截图——
 「开源生态」一屏里的计数器真的能点。

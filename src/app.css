@@ -1,3 +1,11 @@
+/* Animatable angle for the travelling highlight on the hero badge. Browsers
+   without @property simply render the gradient at its initial angle. */
+@property --spin {
+	syntax: '<angle>';
+	inherits: false;
+	initial-value: 0deg;
+}
+
 /* ---------------------------------------------------------------- tokens */
 :root {
 	--bg: #08090b;
