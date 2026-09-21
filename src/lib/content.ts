@@ -91,7 +91,7 @@ const en: SiteContent = {
 	meta: {
 		title: 'Dongsheng Zhao — AI Full-Stack Engineer',
 		description:
-			'AI full-stack engineer, 9 years. Creator of Sveltepress (534 stars). Shipping LLMs into production compliance systems. Open to full-time remote or contract.'
+			'AI full-stack engineer, 9 years. Creator of Sveltepress (537 stars). Shipping LLMs into production compliance systems. Open to full-time remote or contract.'
 	},
 	nav: {
 		work: 'Production',
@@ -102,7 +102,7 @@ const en: SiteContent = {
 		contact: 'Contact'
 	},
 	hero: {
-		eyebrow: 'Creator of Sveltepress · 534 stars',
+		eyebrow: 'Creator of Sveltepress · 537 stars',
 		name: 'Dongsheng Zhao',
 		title: 'AI Full-Stack Engineer · 9 years',
 		lede: "I put LLMs inside production systems — regulatory reports drafted by Claude and OpenAI, a multi-chain risk engine underneath, a public API around it and the workbench on top. Design, build, test, deploy: on my own.",
@@ -113,8 +113,8 @@ const en: SiteContent = {
 		scroll: 'Scroll',
 		stats: [
 			{ value: '9', label: 'years shipping' },
-			{ value: '714', label: 'GitHub stars' },
-			{ value: '79', label: 'public repos' },
+			{ value: '722', label: 'GitHub stars' },
+			{ value: '80', label: 'public repos' },
 			{ value: '4', label: 'open-source orgs' }
 		]
 	},
@@ -171,7 +171,7 @@ const en: SiteContent = {
 			{
 				name: 'codsh',
 				href: 'https://github.com/Blackman99/codsh',
-				stars: 5,
+				stars: 6,
 				tech: 'TypeScript',
 				role: 'Author',
 				blurb:
@@ -180,7 +180,7 @@ const en: SiteContent = {
 			{
 				name: 'real-bot',
 				href: 'https://github.com/Blackman99/real-bot',
-				stars: 5,
+				stars: 6,
 				tech: 'TypeScript',
 				role: 'Author',
 				blurb:
@@ -196,7 +196,7 @@ const en: SiteContent = {
 			{
 				name: 'Sveltepress',
 				href: 'https://github.com/SveltePress/sveltepress',
-				stars: 534,
+				stars: 537,
 				tech: 'SvelteKit',
 				role: 'Creator and maintainer',
 				blurb:
@@ -329,7 +329,7 @@ const zh: SiteContent = {
 	meta: {
 		title: '赵东升 — AI 全栈工程师',
 		description:
-			'AI 全栈工程师，9 年经验。Sveltepress 作者(534 star)。把 LLM 能力做进生产级合规系统。可接全职远程或合同制。'
+			'AI 全栈工程师，9 年经验。Sveltepress 作者(537 star)。把 LLM 能力做进生产级合规系统。可接全职远程或合同制。'
 	},
 	nav: {
 		work: '生产工作',
@@ -340,7 +340,7 @@ const zh: SiteContent = {
 		contact: '联系'
 	},
 	hero: {
-		eyebrow: 'Sveltepress 作者 · 534 star',
+		eyebrow: 'Sveltepress 作者 · 537 star',
 		name: '赵东升',
 		title: 'AI 全栈工程师 · 9 年经验',
 		lede: '我把 LLM 放进生产系统：合规报告由 Claude 与 OpenAI 起草，底下是多链风控引擎，外面包一层开放 API，上面是工作台。设计、开发、测试、部署，一个人走完。',
@@ -351,8 +351,8 @@ const zh: SiteContent = {
 		scroll: '向下滚动',
 		stats: [
 			{ value: '9', label: '年工程经验' },
-			{ value: '714', label: 'GitHub star' },
-			{ value: '79', label: '公开仓库' },
+			{ value: '722', label: 'GitHub star' },
+			{ value: '80', label: '公开仓库' },
 			{ value: '4', label: '开源组织' }
 		]
 	},
@@ -409,7 +409,7 @@ const zh: SiteContent = {
 			{
 				name: 'codsh',
 				href: 'https://github.com/Blackman99/codsh',
-				stars: 5,
+				stars: 6,
 				tech: 'TypeScript',
 				role: '作者',
 				blurb:
@@ -418,7 +418,7 @@ const zh: SiteContent = {
 			{
 				name: 'real-bot',
 				href: 'https://github.com/Blackman99/real-bot',
-				stars: 5,
+				stars: 6,
 				tech: 'TypeScript',
 				role: '作者',
 				blurb:
@@ -434,7 +434,7 @@ const zh: SiteContent = {
 			{
 				name: 'Sveltepress',
 				href: 'https://github.com/SveltePress/sveltepress',
-				stars: 534,
+				stars: 537,
 				tech: 'SvelteKit',
 				role: '创建者 / 维护者',
 				blurb:
