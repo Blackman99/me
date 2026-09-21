@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="zh-CN">
+	<head>
+		<meta charset="utf-8" />
+		<title>赵东升 — AI 全栈工程师</title>
+		<style>
+			@page {
+				size: A4;
+				margin: 13mm 14mm;
+			}
+
+			:root {
+				--ink: #16181d;
+				--dim: #4d545f;
+				--faint: #7b8391;
+				--rule: #d7dbe2;
+				--accent: #c2410c;
+			}
+
+			* {
+				box-sizing: border-box;
+			}
+
+			body {
+				margin: 0;
+				font-family: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue',
+					Arial, sans-serif;
+				font-size: 9.6pt;
+				line-height: 1.58;
+				color: var(--ink);
+				-webkit-print-color-adjust: exact;
+				print-color-adjust: exact;
+			}
+
+			h1 {
+				margin: 0;
+				font-size: 21pt;
+				letter-spacing: 0.02em;
+			}
+
+			.title {
+				margin: 3pt 0 0;
+				font-size: 10.5pt;
+				color: var(--accent);
+				font-weight: 600;
+			}
+
+			.contact {
+				margin: 6pt 0 0;
+				font-size: 8.8pt;
+				color: var(--dim);
+			}
+
+			.contact a {
+				color: var(--dim);
+				text-decoration: none;
+			}
+
+			.contact span + span::before {
+				content: '  ·  ';
+				color: var(--faint);
+			}
+
+			.avail {
+				margin: 7pt 0 0;
+				padding: 4pt 8pt;
+				font-size: 9pt;
+				background: #fdf3ee;
+				border-left: 2.5pt solid var(--accent);
+				color: #7c2d12;
+			}
+
+			.summary {
+				margin: 9pt 0 0;
+				color: var(--dim);
+			}
+
+			h2 {
+				margin: 13pt 0 5pt;
+				font-size: 8.8pt;
+				letter-spacing: 0.16em;
+				color: var(--accent);
+				border-bottom: 0.6pt solid var(--rule);
+				padding-bottom: 2.5pt;
+			}
+
+			.role {
+				margin-top: 8pt;
+				page-break-inside: avoid;
+			}
+
+			.role:first-of-type {
+				margin-top: 0;
+			}
+
+			.role-head {
+				display: flex;
+				justify-content: space-between;
+				align-items: baseline;
+				gap: 10pt;
+			}
+
+			.role-head strong {
+				font-size: 10pt;
+			}
+
+			.org {
+				color: var(--dim);
+				font-weight: 400;
+			}
+
+			.when {
+				flex: none;
+				font-size: 8.6pt;
+				color: var(--faint);
+				white-space: nowrap;
+			}
+
+			ul {
+				margin: 3.5pt 0 0;
+				padding-left: 12pt;
+			}
+
+			li {
+				margin-bottom: 2pt;
+				color: var(--dim);
+			}
+
+			li strong {
+				color: var(--ink);
+				font-weight: 600;
+			}
+
+			.oss-item {
+				margin-top: 5.5pt;
+				page-break-inside: avoid;
+			}
+
+			.oss-item .role-head strong {
+				font-size: 9.6pt;
+			}
+
+			.stars {
+				color: var(--accent);
+				font-weight: 600;
+				font-size: 8.6pt;
+			}
+
+			.oss-item p {
+				margin: 1.5pt 0 0;
+				color: var(--dim);
+			}
+
+			table.skills {
+				width: 100%;
+				border-collapse: collapse;
+			}
+
+			table.skills td {
+				vertical-align: top;
+				padding: 2.2pt 0;
+			}
+
+			table.skills td:first-child {
+				width: 58pt;
+				color: var(--faint);
+				font-weight: 600;
+				font-size: 8.8pt;
+				padding-right: 8pt;
+			}
+
+			table.skills td:last-child {
+				color: var(--dim);
+			}
+
+			.foot {
+				margin-top: 11pt;
+				padding-top: 5pt;
+				border-top: 0.6pt solid var(--rule);
+				font-size: 8.4pt;
+				color: var(--faint);
+				display: flex;
+				justify-content: space-between;
+				gap: 10pt;
+			}
+		</style>
+	</head>
+	<body>
+		<header>
+			<h1>赵东升</h1>
+			<p class="title">AI 全栈工程师 · 9 年经验</p>
+			<p class="contact">
+				<span><a href="mailto:dongshengzhao47@gmail.com">dongshengzhao47@gmail.com</a></span>
+				<span><a href="https://github.com/Blackman99">github.com/Blackman99</a></span>
+				<span><a href="https://dongsheng-blog.netlify.app">dongsheng-blog.netlify.app</a></span>
+				<span>合肥 · UTC+8</span>
+			</p>
+			<p class="avail">
+				<strong>可接全职远程或合同制。</strong>常驻 UTC+8——欧洲整个工作日可以重叠，美东在我的晚上也能对上。可用英语进行日常会议沟通（CET-6）。
+			</p>
+			<p class="summary">
+				九年 Web 与系统工程经验，目前主要把 LLM 能力做进生产系统。我负责一个风控与合规平台的 AI
+				层——用 Claude 与 OpenAI 自动起草报告与规则集草案，替代原本人工撰写的环节——同时独立实现了底层规则引擎、对外开放 API 与 Next.js 工作台，从设计、开发、测试到云上部署全程负责。业余创建并持续维护 Sveltepress（534 star），以及编码 Agent 工具链项目；GitHub 累计约 714 star、79 个公开仓库。
+			</p>
+		</header>
+
+		<h2>工作经历</h2>
+
+		<div class="role">
+			<div class="role-head">
+				<strong>AI 全栈工程师 <span class="org">· 易壹数据科技（合肥）</span></strong>
+				<span class="when">2024.06 – 至今</span>
+			</div>
+			<ul>
+				<li>
+					<strong>LLM 落地生产。</strong>集成 Claude 与 OpenAI，把结构化业务数据与规则命中交给模型，自动生成报告与规则集草案，替代原本人工撰写的环节。
+				</li>
+				<li>
+					<strong>可配置规则引擎。</strong>按业务场景分流的规则匹配与分级判定，业务团队调整策略无需发版。
+				</li>
+				<li>
+					<strong>对外开放 API。</strong>异步轮询 + API Key 鉴权、事件 Webhook、配额计费与用量统计。
+				</li>
+				<li>
+					<strong>吞吐重构。</strong>把全量数据上传改为服务端检测 + gzip 并行分页拉取，单次任务耗时显著下降。
+				</li>
+				<li>
+					<strong>业务工作台。</strong>Next.js 16 / React 19 / TypeScript，状态用 SWR 与 Zustand；含批量处理、图谱探索、报告与监控。
+				</li>
+				<li>
+					<strong>自建低代码平台。</strong>规划并带队实施核心功能，含自主领域设计语言；研发效率提升约 30%，并通过稳定性与扩展性改造减少了跨项目的重复开发。
+				</li>
+				<li>
+					<strong>交付与运维。</strong>主导整体云迁移，搭建 GitHub Actions CI/CD（Go 二进制原子替换、多份备份、秒级回滚），负责生产故障排查。
+				</li>
+			</ul>
+		</div>
+
+		<div class="role">
+			<div class="role-head">
+				<strong>软件开发经理 <span class="org">· 通用电气医疗（中国）</span></strong>
+				<span class="when">2023.10 – 2024.05</span>
+			</div>
+			<ul>
+				<li>x20 系统与 China AW 医疗成像系统的技术管理及核心功能实现。</li>
+			</ul>
+		</div>
+
+		<div class="role">
+			<div class="role-head">
+				<strong>高级开发工程师 <span class="org">· 哔哩哔哩（猫耳 FM）</span></strong>
+				<span class="when">2022.10 – 2023.07</span>
+			</div>
+			<ul>
+				<li>业务需求开发与前端技术迭代；维护团队日常依赖的内部组件库与工具库。</li>
+			</ul>
+		</div>
+
+		<div class="role">
+			<div class="role-head">
+				<strong>前端开发工程师 <span class="org">· 北京欧非科技</span></strong>
+				<span class="when">2021.08 – 2022.09</span>
+			</div>
+			<ul>
+				<li>
+					负责海外信贷 H5、业务管理系统与数据聚合平台开发，支撑在贷金额上亿美金、百万级入驻商户。
+				</li>
+				<li>构建速度提升 50%，开发启动与热更新提速 100%，生产环境 Lighthouse 各项评分 90+。</li>
+			</ul>
+		</div>
+
+		<div class="role">
+			<div class="role-head">
+				<strong>前端工程师 <span class="org">· 亚信科技（中国）</span></strong>
+				<span class="when">2019.09 – 2021.08</span>
+			</div>
+			<ul>
+				<li>
+					负责项目技术选型、工程搭建、核心页面开发与持续集成；沉淀了部门在我离开后仍在使用的内部类库与组件。
+				</li>
+			</ul>
+		</div>
+
+		<div class="role">
+			<div class="role-head">
+				<strong>Web 前端 <span class="org">· 北京优锘科技</span></strong>
+				<span class="when">2017.10 – 2019.09</span>
+			</div>
+			<ul>
+				<li>技术架构选型与搭建、高还原度页面开发、CI/CD 与跨端兼容处理；提升官网 PV / UV。</li>
+			</ul>
+		</div>
+
+		<h2>开源项目</h2>
+
+		<div class="oss-item">
+			<div class="role-head">
+				<strong>Sveltepress <span class="org">· 创建者 / 维护者 · sveltepress.site</span></strong>
+				<span class="when"><span class="stars">534★</span> · 2022.08 至今</span>
+			</div>
+			<p>
+				基于 SvelteKit 的内容优先站点构建工具：支持 SSR / SSG / CSR；Markdown 中可直接编写 Svelte 5
+				组件；版本化、i18n 与 Pagefind 搜索；主题可自定义并附带默认主题，全链路类型化 API。
+			</p>
+		</div>
+
+		<div class="oss-item">
+			<div class="role-head">
+				<strong>agent-feishu-channel <span class="org">· 作者 · TypeScript</span></strong>
+				<span class="when"><span class="stars">48★</span></span>
+			</div>
+			<p>
+				将 Claude Code / Codex 会话桥接到飞书机器人：会话生命周期管理，消息与工具调用双向转发，可在 IM 内直接驱动编码 Agent。
+			</p>
+		</div>
+
+		<div class="oss-item">
+			<div class="role-head">
+				<strong>codsh <span class="org">· 作者 · TypeScript</span></strong>
+				<span class="when"><span class="stars">5★</span></span>
+			</div>
+			<p>基于 DeepSeek Harness 构建的终端编码 Agent，自行实现工具调用循环与交互设计。</p>
+		</div>
+
+		<div class="oss-item">
+			<div class="role-head">
+				<strong>Svelte 生态组件 <span class="org">· 作者 / 维护者</span></strong>
+				<span class="when">累计约 714★ · 79 个仓库</span>
+			</div>
+			<p>
+				svelte5plus-calendar——零依赖全功能日历组件（月 / 周 / 日 / 年 / 议程视图、拖拽、重复事件、
+				i18n、暗色）；svelte-json-discovery——discovery.js JSON 结构视图的独立 Svelte 5 组件。另参与
+				Casual-UI、headless-wysiwyg 等组织的维护。
+			</p>
+		</div>
+
+		<h2>技能</h2>
+		<table class="skills">
+			<tr>
+				<td>AI</td>
+				<td>
+					LLM 应用生产落地（Claude / OpenAI / DeepSeek）· Prompt 与结构化输出 · 工具调用 / Agent
+					循环 · Claude Code、Codex 工作流集成
+				</td>
+			</tr>
+			<tr>
+				<td>语言</td>
+				<td>TypeScript / JavaScript · Go · Rust · Java · Python</td>
+			</tr>
+			<tr>
+				<td>前端</td>
+				<td>
+					React 19 / Next.js · Svelte 5 / SvelteKit · Vue 3 · Vite / Rollup / Nx · Tauri 桌面与移动 Hybrid · D3 / ECharts
+				</td>
+			</tr>
+			<tr>
+				<td>服务端</td>
+				<td>Node.js · Go · PostgreSQL / MySQL · Redis · REST 与异步任务 · LLM 集成</td>
+			</tr>
+			<tr>
+				<td>基础设施</td>
+				<td>
+					AWS · 腾讯云 · Docker · GitHub Actions / Jenkins · Linux（Arch / Manjaro）· systemd
+					部署与回滚
+				</td>
+			</tr>
+			<tr>
+				<td>其他</td>
+				<td>常用算法与数据结构 · 开放 API 设计 · 英语会议沟通（CET-6）</td>
+			</tr>
+		</table>
+
+		<h2>教育</h2>
+		<table class="skills">
+			<tr>
+				<td>2014 – 2018</td>
+				<td><strong>皖西学院</strong> · 电子信息工程 本科</td>
+			</tr>
+		</table>
+
+		<div class="foot">
+			<span>dongshengzhao47@gmail.com · github.com/Blackman99</span>
+			<span>可接全职远程或合同制 · UTC+8</span>
+		</div>
+	</body>
+</html>
