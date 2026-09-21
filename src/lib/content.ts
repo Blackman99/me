@@ -63,6 +63,7 @@ export interface SiteContent {
 		blogLabel: string;
 		cvLabel: string;
 		cvNote: string;
+		cvFile: string;
 		footer: string;
 	};
 	a11y: { langToggle: string; toTop: string; sectionNav: string };
@@ -72,7 +73,6 @@ export const EMAIL = 'dongshengzhao47@gmail.com';
 export const GITHUB = 'https://github.com/Blackman99';
 export const BLOG = 'https://dongsheng-blog.netlify.app';
 export const SVELTEPRESS = 'https://sveltepress.site';
-export const CV_FILE = 'Dongsheng-Zhao-CV.pdf';
 /** Absolute origin used for canonical, hreflang and Open Graph URLs.
     Change this (and static/robots.txt + static/sitemap.xml) if the site
     moves to a custom domain. */
@@ -318,6 +318,7 @@ const en: SiteContent = {
 		blogLabel: 'Blog',
 		cvLabel: 'Download CV',
 		cvNote: 'PDF · English',
+		cvFile: 'Dongsheng-Zhao-CV.pdf',
 		footer: 'Built with SvelteKit by the person it is about. No trackers, no analytics.'
 	},
 	a11y: { langToggle: 'Switch to Chinese', toTop: 'Back to top', sectionNav: 'Section navigation' }
@@ -552,7 +553,8 @@ const zh: SiteContent = {
 		githubLabel: 'GitHub',
 		blogLabel: '博客',
 		cvLabel: '下载简历',
-		cvNote: 'PDF · 英文版',
+		cvNote: 'PDF · 中文版',
+		cvFile: 'Dongsheng-Zhao-CV-zh.pdf',
 		footer: '本页由本人用 SvelteKit 写成。无埋点，无统计脚本。'
 	},
 	a11y: { langToggle: '切换到英文', toTop: '回到顶部', sectionNav: '章节导航' }

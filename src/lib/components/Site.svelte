@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { base } from '$app/paths';
-	import { BLOG, CV_FILE, EMAIL, GITHUB, SITE_URL, content, type Lang } from '$lib/content';
+	import { BLOG, EMAIL, GITHUB, SITE_URL, content, type Lang } from '$lib/content';
 	import { reveal } from '$lib/reveal';
 	import ChainGraph from './ChainGraph.svelte';
 	import Hero from './Hero.svelte';
@@ -162,7 +162,7 @@
 			<div class="links-row" use:reveal data-reveal style="--i:6">
 				<a href={GITHUB} target="_blank" rel="noopener noreferrer">{c.contact.githubLabel}</a>
 				<a href={BLOG} target="_blank" rel="noopener noreferrer">{c.contact.blogLabel}</a>
-				<a class="cv" href="{base}/{CV_FILE}" download>
+				<a class="cv" href="{base}/{c.contact.cvFile}" download>
 					{c.contact.cvLabel}<span class="note">{c.contact.cvNote}</span>
 				</a>
 			</div>
