@@ -12,10 +12,11 @@ English version: [README.md](./README.md)
 | `src/lib/content.ts` | 站点全部文案，中英各一份。改文案只改这里。 |
 | `src/lib/components/` | 各分屏，以及三块手写图形（链路图、终端、Markdown → Svelte）。 |
 | `src/lib/aurora.ts` | 首屏的 WebGL 背景——一个片元着色器，零依赖。 |
+| `scripts/build-og.mjs` | 生成社交分享卡片与触摸图标。 |
 | `src/lib/reveal.ts` | 滚动入场动画背后的 IntersectionObserver action。 |
 | `src/app.css` | 设计变量、整屏分屏规则、reduced-motion 降级。 |
-| `scripts/cv.html` | 英文 CV 的源文件。 |
-| `static/` | 构建好的 CV PDF、favicon、`robots.txt`、`sitemap.xml`。 |
+| `scripts/cv.html`、`scripts/cv.zh.html` | 中英文 CV 的源文件。 |
+| `static/` | 构建好的 CV PDF、社交卡片、图标、`robots.txt`、`sitemap.xml`。 |
 
 ## 本地开发
 
@@ -35,6 +36,23 @@ pnpm preview    # 本地预览 build/
 ```bash
 ./scripts/build-cv.sh      # 需要 Google Chrome，可用 $CHROME 覆盖路径
 ```
+
+## 社交分享卡片
+
+`static/og.jpg` 与 `static/og-zh.jpg` 由站点自己的内容模块和首屏着色器生成，
+因此卡片不会和它所指向的页面脱节：
+
+```bash
+pnpm build:og      # 需要 Playwright 与 Chrome
+```
+
+输出是确定性的——着色器固定在某个时间点绘制，这个时间点是通过在整段动画上采样
+文字区域亮度选出来的：画面整体明亮，但文字所在的位置恰好是暗的。用 JPEG 而非
+PNG，是因为背景是连续渐变：约 100 KB，而视觉等价的 PNG 要约 700 KB。
+
+卡片上有意写不会过期的说法（`9 years`、`500+ stars on one project`），而不是
+页面上的精确数字。社交平台会把这些图缓存数周，无论文件本身怎么变；一个已经过期
+的精确数字，比一个取整的说法更难看。
 
 ## 部署
 

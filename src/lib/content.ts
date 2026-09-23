@@ -20,7 +20,7 @@ export interface Domain {
 
 export interface SiteContent {
 	locale: string;
-	meta: { title: string; description: string };
+	meta: { title: string; description: string; ogImage: string; ogAlt: string };
 	nav: { work: string; ai: string; oss: string; play: string; domains: string; contact: string };
 	hero: {
 		eyebrow: string;
@@ -91,7 +91,10 @@ const en: SiteContent = {
 	meta: {
 		title: 'Dongsheng Zhao — AI Full-Stack Engineer',
 		description:
-			'AI full-stack engineer, 9 years. Creator of Sveltepress (537 stars). Shipping LLMs into production compliance systems. Open to full-time remote or contract.'
+			'AI full-stack engineer, 9 years. Creator of Sveltepress (537 stars). Shipping LLMs into production compliance systems. Open to full-time remote or contract.',
+		ogImage: 'og.jpg',
+		ogAlt:
+			'Dongsheng Zhao — AI Full-Stack Engineer, 9 years, creator of Sveltepress. Open to full-time remote or contract, UTC+8.'
 	},
 	nav: {
 		work: 'Production',
@@ -329,7 +332,9 @@ const zh: SiteContent = {
 	meta: {
 		title: '赵东升 — AI 全栈工程师',
 		description:
-			'AI 全栈工程师，9 年经验。Sveltepress 作者(537 star)。把 LLM 能力做进生产级合规系统。可接全职远程或合同制。'
+			'AI 全栈工程师，9 年经验。Sveltepress 作者(537 star)。把 LLM 能力做进生产级合规系统。可接全职远程或合同制。',
+		ogImage: 'og-zh.jpg',
+		ogAlt: '赵东升 — AI 全栈工程师，9 年经验，Sveltepress 作者。可接全职远程或合同制，UTC+8。'
 	},
 	nav: {
 		work: '生产工作',

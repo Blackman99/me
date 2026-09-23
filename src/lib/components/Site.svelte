@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { base } from '$app/paths';
-	import { BLOG, EMAIL, GITHUB, SITE_URL, content, type Lang } from '$lib/content';
+	import { BLOG, EMAIL, GITHUB, SITE_URL, SVELTEPRESS, content, type Lang } from '$lib/content';
 	import { reveal } from '$lib/reveal';
 	import ChainGraph from './ChainGraph.svelte';
 	import Hero from './Hero.svelte';
@@ -13,6 +13,63 @@
 	let { lang }: { lang: Lang } = $props();
 	const c = $derived(content[lang]);
 	const canonical = $derived(lang === 'en' ? `${SITE_URL}/` : `${SITE_URL}/zh/`);
+	const ogImage = $derived(`${SITE_URL}/${c.meta.ogImage}`);
+
+	/**
+	 * Structured data. A personal site is exactly what schema.org's Person type
+	 * is for, and it is the one thing here that search engines read as fact
+	 * rather than inferring from prose.
+	 */
+	const jsonLd = $derived(
+		JSON.stringify({
+			'@context': 'https://schema.org',
+			'@graph': [
+				{
+					'@type': 'ProfilePage',
+					'@id': `${canonical}#page`,
+					url: canonical,
+					name: c.meta.title,
+					inLanguage: c.locale,
+					primaryImageOfPage: ogImage,
+					mainEntity: { '@id': `${SITE_URL}/#person` }
+				},
+				{
+					'@type': 'Person',
+					'@id': `${SITE_URL}/#person`,
+					name: content.en.hero.name,
+					alternateName: content.zh.hero.name,
+					jobTitle: lang === 'en' ? 'AI Full-Stack Engineer' : 'AI 全栈工程师',
+					description: c.meta.description,
+					url: `${SITE_URL}/`,
+					image: ogImage,
+					email: `mailto:${EMAIL}`,
+					address: {
+						'@type': 'PostalAddress',
+						addressLocality: lang === 'en' ? 'Hefei' : '合肥',
+						addressCountry: 'CN'
+					},
+					knowsLanguage: ['zh-CN', 'en'],
+					knowsAbout: [
+						'Large language model applications',
+						'AI agents',
+						'TypeScript',
+						'Go',
+						'Svelte',
+						'SvelteKit',
+						'React',
+						'Next.js',
+						'Vue',
+						'Web performance'
+					],
+					alumniOf: {
+						'@type': 'CollegeOrUniversity',
+						name: lang === 'en' ? 'West Anhui University' : '皖西学院'
+					},
+					sameAs: [GITHUB, BLOG, SVELTEPRESS, 'https://github.com/SveltePress/sveltepress']
+				}
+			]
+		}).replace(/</g, '\\u003c')
+	);
 
 	// The prerendered HTML already carries the right `lang`; this keeps it
 	// correct after a client-side hop between /en and /zh.
@@ -24,16 +81,38 @@
 <svelte:head>
 	<title>{c.meta.title}</title>
 	<meta name="description" content={c.meta.description} />
-	<meta property="og:title" content={c.meta.title} />
-	<meta property="og:description" content={c.meta.description} />
-	<meta property="og:type" content="profile" />
-	<meta name="twitter:card" content="summary_large_image" />
-	<meta property="og:url" content={canonical} />
-	<meta property="og:locale" content={lang === 'en' ? 'en' : 'zh_CN'} />
+	<meta name="author" content={content.en.hero.name} />
+	<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />
+
 	<link rel="canonical" href={canonical} />
 	<link rel="alternate" hreflang="en" href="{SITE_URL}/" />
 	<link rel="alternate" hreflang="zh-Hans" href="{SITE_URL}/zh/" />
 	<link rel="alternate" hreflang="x-default" href="{SITE_URL}/" />
+
+	<meta property="og:site_name" content={content.en.hero.name} />
+	<meta property="og:type" content="profile" />
+	<meta property="og:title" content={c.meta.title} />
+	<meta property="og:description" content={c.meta.description} />
+	<meta property="og:url" content={canonical} />
+	<meta property="og:locale" content={lang === 'en' ? 'en_US' : 'zh_CN'} />
+	<meta property="og:locale:alternate" content={lang === 'en' ? 'zh_CN' : 'en_US'} />
+	<meta property="og:image" content={ogImage} />
+	<meta property="og:image:secure_url" content={ogImage} />
+	<meta property="og:image:type" content="image/jpeg" />
+	<meta property="og:image:width" content="1200" />
+	<meta property="og:image:height" content="630" />
+	<meta property="og:image:alt" content={c.meta.ogAlt} />
+	<meta property="profile:first_name" content="Dongsheng" />
+	<meta property="profile:last_name" content="Zhao" />
+	<meta property="profile:username" content="Blackman99" />
+
+	<meta name="twitter:card" content="summary_large_image" />
+	<meta name="twitter:title" content={c.meta.title} />
+	<meta name="twitter:description" content={c.meta.description} />
+	<meta name="twitter:image" content={ogImage} />
+	<meta name="twitter:image:alt" content={c.meta.ogAlt} />
+
+	{@html `<script type="application/ld+json">${jsonLd}</scr` + `ipt>`}
 </svelte:head>
 
 <Nav {c} {lang} />

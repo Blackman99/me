@@ -7,12 +7,14 @@
  * it; the CSS backdrop underneath is what everyone else sees.
  */
 
-const VERT = `
+// Exported so scripts/build-og.mjs can render the same backdrop into the
+// social preview image rather than keeping a second copy of the shader.
+export const VERT = `
 attribute vec2 a_pos;
 void main() { gl_Position = vec4(a_pos, 0.0, 1.0); }
 `;
 
-const FRAG = `
+export const FRAG = `
 precision highp float;
 
 uniform vec2 u_res;

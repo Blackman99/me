@@ -13,10 +13,11 @@ Chinese, built with SvelteKit and deployed as a static site to GitHub Pages.
 | `src/lib/content.ts` | Every string on the site, in both languages. Edit copy here and nowhere else. |
 | `src/lib/components/` | The sections and the three hand-drawn visuals (chain graph, terminal, Markdown → Svelte). |
 | `src/lib/aurora.ts` | The hero's WebGL backdrop — one fragment shader, no dependencies. |
+| `scripts/build-og.mjs` | Renders the social preview cards and the touch icon. |
 | `src/lib/reveal.ts` | The IntersectionObserver action behind the scroll-in animations. |
 | `src/app.css` | Design tokens, the full-screen paging rules and the reduced-motion fallback. |
-| `scripts/cv.html` | Source of the English CV. |
-| `static/` | The built CV PDF, favicon, `robots.txt`, `sitemap.xml`. |
+| `scripts/cv.html`, `scripts/cv.zh.html` | Sources of the English and Chinese CVs. |
+| `static/` | Built CV PDFs, social cards, icons, `robots.txt`, `sitemap.xml`. |
 
 ## Develop
 
@@ -36,6 +37,25 @@ so CI never needs a browser. After editing the HTML:
 ```bash
 ./scripts/build-cv.sh      # needs Google Chrome; override with $CHROME
 ```
+
+## Social preview cards
+
+`static/og.jpg` and `static/og-zh.jpg` are generated from the site's own content
+module and hero shader, so the card cannot drift away from the page it links to:
+
+```bash
+pnpm build:og      # needs Playwright and Chrome
+```
+
+Output is deterministic — the shader is drawn at a fixed time, chosen by sampling
+luminance across the animation so the field is bright overall but dark exactly
+where the text sits. They are JPEG rather than PNG because the backdrop is a
+continuous gradient: ~100 KB against ~700 KB for a visually identical file.
+
+The cards deliberately carry claims that stay true (`9 years`, `500+ stars on one
+project`) rather than the exact counts on the page. Social platforms cache these
+images for weeks regardless of what the file says, and a precise number that has
+gone stale reads worse than a rounded one.
 
 ## Deploy
 

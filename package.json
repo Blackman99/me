@@ -7,6 +7,8 @@
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build",
+		"build:cv": "./scripts/build-cv.sh",
+		"build:og": "node scripts/build-og.mjs",
 		"preview": "vite preview",
 		"prepare": "svelte-kit sync || echo ''",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
