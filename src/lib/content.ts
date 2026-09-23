@@ -116,7 +116,7 @@ const en: SiteContent = {
 		scroll: 'Scroll',
 		stats: [
 			{ value: '9', label: 'years shipping' },
-			{ value: '722', label: 'GitHub stars' },
+			{ value: '723', label: 'GitHub stars' },
 			{ value: '80', label: 'public repos' },
 			{ value: '4', label: 'open-source orgs' }
 		]
@@ -165,7 +165,7 @@ const en: SiteContent = {
 			{
 				name: 'agent-feishu-channel',
 				href: 'https://github.com/Blackman99/agent-feishu-channel',
-				stars: 48,
+				stars: 49,
 				tech: 'TypeScript',
 				role: 'Author',
 				blurb:
@@ -181,13 +181,13 @@ const en: SiteContent = {
 					'A terminal coding agent on the DeepSeek harness, with its own tool-call loop and interaction design. One sentence to /ship, and it comes back verified.'
 			},
 			{
-				name: 'real-bot',
-				href: 'https://github.com/Blackman99/real-bot',
+				name: 'deskfolk',
+				href: 'https://github.com/Blackman99/deskfolk',
 				stars: 6,
-				tech: 'TypeScript',
+				tech: 'Tauri / Svelte 5',
 				role: 'Author',
 				blurb:
-					'Alpha. A local-first macOS app for persistent AI teammates — open model endpoints and MCP tools, nothing leaving the machine unless you say so.'
+					'Alpha. A local-first macOS app for persistent AI teammates — bots that chat one to one, join groups and hand work to each other, over a split-pane workbench with real terminals and a flow board per job. Bring your own OpenAI-compatible endpoints and MCP servers.'
 			}
 		]
 	},
@@ -208,6 +208,7 @@ const en: SiteContent = {
 			{
 				name: 'svelte5plus-calendar',
 				href: 'https://github.com/Blackman99/svelte5plus-calendar',
+				stars: 5,
 				tech: 'Svelte 5',
 				role: 'Author',
 				blurb:
@@ -356,7 +357,7 @@ const zh: SiteContent = {
 		scroll: '向下滚动',
 		stats: [
 			{ value: '9', label: '年工程经验' },
-			{ value: '722', label: 'GitHub star' },
+			{ value: '723', label: 'GitHub star' },
 			{ value: '80', label: '公开仓库' },
 			{ value: '4', label: '开源组织' }
 		]
@@ -405,7 +406,7 @@ const zh: SiteContent = {
 			{
 				name: 'agent-feishu-channel',
 				href: 'https://github.com/Blackman99/agent-feishu-channel',
-				stars: 48,
+				stars: 49,
 				tech: 'TypeScript',
 				role: '作者',
 				blurb:
@@ -421,13 +422,13 @@ const zh: SiteContent = {
 					'基于 DeepSeek Harness 的终端编码 Agent，自行实现工具调用循环与交互设计。一句话 /ship，回来的是验证过的代码。'
 			},
 			{
-				name: 'real-bot',
-				href: 'https://github.com/Blackman99/real-bot',
+				name: 'deskfolk',
+				href: 'https://github.com/Blackman99/deskfolk',
 				stars: 6,
-				tech: 'TypeScript',
+				tech: 'Tauri / Svelte 5',
 				role: '作者',
 				blurb:
-					'Alpha 阶段。local-first 的 macOS 应用，常驻 AI 队友：开放模型端点与 MCP 工具，不主动把东西送出这台机器。'
+					'Alpha 阶段。local-first 的 macOS 应用，常驻 AI 队友：Bot 单聊、进群、互相转交任务，配分屏工作台与常驻终端，每个任务实时画成流程看板。模型端点兼容 OpenAI，MCP 工具自带。'
 			}
 		]
 	},
@@ -448,6 +449,7 @@ const zh: SiteContent = {
 			{
 				name: 'svelte5plus-calendar',
 				href: 'https://github.com/Blackman99/svelte5plus-calendar',
+				stars: 5,
 				tech: 'Svelte 5',
 				role: '作者',
 				blurb: '零依赖的全功能日历：月 / 周 / 日 / 年 / 议程视图，拖拽，重复事件，i18n 与暗色模式。'
