@@ -84,9 +84,23 @@ strands the content nobody can scroll to.
 
 **The hero backdrop is a shader, and it is optional.** `src/lib/aurora.ts` is a
 single domain-warped noise fragment shader on one triangle — raw WebGL, no scene
-library, 5.4 KB. It is imported dynamically after the `load` event, so it is
-never on the critical path, and it renders at half resolution because the field
-is low-frequency enough that nobody can tell.
+library, 8.9 KB (4 KB gzipped). It is imported dynamically after the `load`
+event, so it is never on the critical path, and it renders at half resolution
+because the field is low-frequency enough that nobody can tell.
+
+**It answers the pointer.** A lantern follows the cursor and lights whichever
+ribbon it is held over, even in the dark corner; moving fast twists the field
+into a vortex and flares the filaments; a click sends out a ring that shoves the
+field aside as it passes, and one ring goes out on its own as the shader fades
+in, so the backdrop shows it can move before anyone tries. All of it displaces
+where the noise is sampled or adds light on top — the dark pocket behind the
+headline stays put, so the copy never loses its contrast. With no input every
+interaction term is an exact zero: the social card renders pixel-identical to
+the shader before any of this existed.
+
+Everywhere else the CSS layer does what it can without a GPU: a patch of grid
+lights up under the pointer or finger, and a click or tap sends out a CSS ring.
+Links and buttons are left alone.
 
 It only runs on a viewport of at least 992 px with a fine pointer, at least four
 cores, and no reduced-motion preference. Phones, tablets and anyone who asked for
@@ -101,16 +115,17 @@ and `visibilitychange` pauses it for a backgrounded tab.
 scroll progress bar and the hero's scroll-away both use scroll-linked animation
 behind an `@supports` guard and are simply absent where that is unsupported. The
 headline wipe, its specular sheen and the travelling highlight on the badge are
-plain keyframes. The only JavaScript animation outside the shader is the stat
-count-up, and the stats reserve their final width so it cannot shift the layout.
+plain keyframes. Outside the shader, JavaScript only animates the stat count-up
+— the stats reserve their final width so it cannot shift the layout — and tells
+the backdrop where the pointer is; the rings themselves are keyframes.
 
 Measured on the built site: LCP ≈ 0.46 s, CLS 0, ~60 fps throughout, 61 KiB
 transferred on desktop and 58 KiB on a phone.
 
 **`prefers-reduced-motion` is a real path, not an afterthought.** It disables
 snapping, collapses every transition, forces all revealed content visible, drops
-the headline wipe and sheen, fills the stats in immediately, and skips the shader
-entirely.
+the headline wipe and sheen, fills the stats in immediately, skips the shader
+entirely, and leaves the backdrop inert to the pointer.
 
 **The Sveltepress demo is a live Svelte component**, not a screenshot of one —
 the counter in the "Open source" section really counts.

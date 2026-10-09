@@ -7,8 +7,17 @@
 	let { c }: { c: SiteContent } = $props();
 
 	let heroEl: HTMLElement;
+	let backdrop: HTMLElement;
 	let canvas = $state<HTMLCanvasElement>();
 	let glOn = $state(false);
+	let aurora: Aurora | null = null;
+
+	/** CSS rings for when the shader is not running (touch screens, mostly). */
+	let rings = $state<{ id: number; x: number; y: number }[]>([]);
+	let ringId = 0;
+
+	let hint = $state<'stir' | 'tap' | null>(null);
+	let spent = $state(false);
 
 	const reduced = () =>
 		typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -28,9 +37,9 @@
 		const el = canvas;
 		if (!el || !wantsShader()) return;
 
-		let aurora: Aurora | null = null;
 		let io: IntersectionObserver | null = null;
 		let cancelled = false;
+		let intro = 0;
 
 		async function boot() {
 			const { startAurora } = await import('$lib/aurora');
@@ -38,7 +47,14 @@
 			aurora = startAurora(el!);
 			if (!aurora) return;
 			glOn = true;
+			hint = 'stir';
 			aurora.play();
+			// One ring out in the open field as the shader fades in, so the
+			// backdrop shows it can move before anyone has thought to try.
+			intro = window.setTimeout(() => {
+				const r = heroEl.getBoundingClientRect();
+				if (!spent) aurora?.ripple(r.left + r.width * 0.74, r.top + r.height * 0.36, 0.7);
+			}, 1300);
 			// Stop drawing the moment the hero leaves the screen — there are six
 			// more sections below and none of them need a GPU.
 			io = new IntersectionObserver(
@@ -55,9 +71,85 @@
 
 		return () => {
 			cancelled = true;
+			clearTimeout(intro);
 			window.removeEventListener('load', kick);
 			io?.disconnect();
 			aurora?.stop();
+			aurora = null;
+			glOn = false;
+		};
+	});
+
+	/**
+	 * The parts of the backdrop that answer the pointer without a GPU: a patch
+	 * of grid that lights up under it, and — where the shader is not running —
+	 * a ring wherever the backdrop is clicked or tapped.
+	 */
+	$effect(() => {
+		if (reduced()) return;
+
+		if (!matchMedia('(pointer: fine)').matches) hint = 'tap';
+
+		let raf = 0;
+		let fade = 0;
+		let lx = 0;
+		let ly = 0;
+
+		const place = (e: PointerEvent) => {
+			const r = backdrop.getBoundingClientRect();
+			// Measured against the untransformed box: the backdrop scales up as
+			// the hero scrolls away, and the mask lives in its own coordinates.
+			lx = ((e.clientX - r.left) / r.width) * backdrop.offsetWidth;
+			ly = ((e.clientY - r.top) / r.height) * backdrop.offsetHeight;
+			if (raf) return;
+			raf = requestAnimationFrame(() => {
+				raf = 0;
+				backdrop.style.setProperty('--px', `${lx}px`);
+				backdrop.style.setProperty('--py', `${ly}px`);
+			});
+		};
+
+		const light = (on: boolean) => backdrop.style.setProperty('--spot', on ? '1' : '0');
+
+		const onMove = (e: PointerEvent) => {
+			place(e);
+			light(true);
+		};
+
+		// A finger "leaves" the moment it lifts; its patch fades on a timer instead.
+		const onLeave = (e: PointerEvent) => {
+			if (e.pointerType !== 'touch') light(false);
+		};
+
+		const onDown = (e: PointerEvent) => {
+			if (e.button !== 0) return;
+			// Buttons and links do their own thing; everything else is backdrop.
+			if ((e.target as Element).closest('a, button')) return;
+			place(e);
+			light(true);
+			spent = true;
+			if (aurora) {
+				aurora.ripple(e.clientX, e.clientY);
+			} else {
+				rings.push({ id: ++ringId, x: lx, y: ly });
+				if (rings.length > 4) rings.shift();
+			}
+			if (e.pointerType === 'touch') {
+				clearTimeout(fade);
+				fade = window.setTimeout(() => light(false), 900);
+			}
+		};
+
+		heroEl.addEventListener('pointermove', onMove, { passive: true });
+		heroEl.addEventListener('pointerleave', onLeave, { passive: true });
+		heroEl.addEventListener('pointerdown', onDown, { passive: true });
+
+		return () => {
+			cancelAnimationFrame(raf);
+			clearTimeout(fade);
+			heroEl.removeEventListener('pointermove', onMove);
+			heroEl.removeEventListener('pointerleave', onLeave);
+			heroEl.removeEventListener('pointerdown', onDown);
 		};
 	});
 
@@ -87,12 +179,20 @@
 </script>
 
 <section class="section hero" id="top" bind:this={heroEl}>
-	<div class="backdrop" class:gl={glOn} aria-hidden="true">
+	<div class="backdrop" class:gl={glOn} aria-hidden="true" bind:this={backdrop}>
 		<canvas bind:this={canvas}></canvas>
 		<span class="blob b1"></span>
 		<span class="blob b2"></span>
 		<span class="blob b3"></span>
 		<span class="grid"></span>
+		<span class="spot"></span>
+		{#each rings as r (r.id)}
+			<span
+				class="ring"
+				style="left:{r.x}px;top:{r.y}px"
+				onanimationend={() => (rings = rings.filter((x) => x.id !== r.id))}
+			></span>
+		{/each}
 	</div>
 
 	<div class="shell">
@@ -141,6 +241,19 @@
 		<span class="rail"><span class="bead"></span></span>
 		{c.hero.scroll}
 	</span>
+
+	{#if hint}
+		<span class="play-hint" aria-hidden="true">
+			<span class="hint-body" class:spent>
+				<svg viewBox="0 0 24 24"
+					><path d="M5 3.5 18.5 10l-6 1.6L9.6 17.5z" /><path
+						d="M15.5 15.5a5 5 0 0 0 4-4M17 19.5a9 9 0 0 0 6.5-6.5"
+					/></svg
+				>
+				{hint === 'stir' ? c.hero.hint.stir : c.hero.hint.tap}
+			</span>
+		</span>
+	{/if}
 </section>
 
 <style>
@@ -226,6 +339,47 @@
 			linear-gradient(to bottom, rgb(255 255 255 / 0.045) 1px, transparent 1px);
 		background-size: 64px 64px;
 		mask-image: radial-gradient(ellipse 85% 70% at 50% 45%, #000 20%, transparent 78%);
+	}
+
+	/* A warmer patch of grid under the pointer. Its position and visibility
+	   are custom properties the script sets on the backdrop. */
+	.spot {
+		position: absolute;
+		inset: 0;
+		background-image:
+			linear-gradient(to right, rgb(255 178 140 / 0.2) 1px, transparent 1px),
+			linear-gradient(to bottom, rgb(255 178 140 / 0.2) 1px, transparent 1px);
+		background-size: 64px 64px;
+		mask-image: radial-gradient(
+			circle 14rem at var(--px, 50%) var(--py, 50%),
+			#000,
+			transparent 72%
+		);
+		opacity: var(--spot, 0);
+		transition: opacity 0.6s var(--ease);
+	}
+
+	/* Without the shader there is no lantern, so the patch brings its own. */
+	.backdrop:not(.gl) .spot::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		background: radial-gradient(
+			circle 12rem at var(--px, 50%) var(--py, 50%),
+			rgb(255 107 53 / 0.18),
+			transparent 70%
+		);
+	}
+
+	.ring {
+		position: absolute;
+		translate: -50% -50%;
+		border-radius: 50%;
+		border: 1.5px solid rgb(255 150 105 / 0.9);
+		box-shadow:
+			0 0 26px rgb(255 107 53 / 0.45),
+			inset 0 0 22px rgb(94 234 212 / 0.25);
+		animation: ring-out 1.5s var(--ease) forwards;
 	}
 
 	.shell,
@@ -511,7 +665,60 @@
 		animation: fall 1.9s var(--ease) infinite;
 	}
 
+	/* ------------------------------------------------ interaction hint */
+	/* The entrance and the exit live on different elements, so dismissing
+	   the hint halfway through its entrance can never make it flash. */
+	.play-hint {
+		position: absolute;
+		z-index: 1;
+		/* Lines up with the right edge of the content column. */
+		right: max(var(--gutter), calc((100% - var(--maxw)) / 2));
+		bottom: clamp(1.4rem, 4vh, 2.6rem);
+		pointer-events: none;
+		opacity: 0;
+		animation: rise 1s var(--ease) 2.4s forwards;
+	}
+
+	.hint-body {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.55rem;
+		font-family: var(--mono);
+		font-size: 0.6rem;
+		letter-spacing: 0.16em;
+		text-transform: uppercase;
+		color: var(--fg-faint);
+		transition: opacity 0.6s var(--ease);
+	}
+
+	.hint-body.spent {
+		opacity: 0;
+	}
+
+	.play-hint svg {
+		width: 1.15rem;
+		height: 1.15rem;
+		fill: none;
+		stroke: var(--accent);
+		stroke-width: 1.5;
+		stroke-linecap: round;
+		stroke-linejoin: round;
+	}
+
 	/* -------------------------------------------------------- keyframes */
+	@keyframes ring-out {
+		from {
+			width: 0;
+			height: 0;
+			opacity: 1;
+		}
+		to {
+			width: 26rem;
+			height: 26rem;
+			opacity: 0;
+		}
+	}
+
 	@keyframes rise {
 		from {
 			opacity: 0;
@@ -662,7 +869,8 @@
 	/* On phones the hero fills the screen on its own; the hint would sit on
 	   top of the stats. */
 	@media (max-width: 48rem), (max-height: 44rem) {
-		.scroll-hint {
+		.scroll-hint,
+		.play-hint {
 			display: none;
 		}
 	}
@@ -672,6 +880,11 @@
 		.scroll-hint {
 			opacity: 1;
 			animation: none;
+		}
+
+		.spot,
+		.ring {
+			display: none;
 		}
 
 		.blob,

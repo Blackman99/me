@@ -21,6 +21,14 @@ uniform vec2 u_res;
 uniform float u_time;
 uniform vec2 u_mouse;
 
+// Interaction. Every one of these is zero until someone points at the hero,
+// and at zero the shader draws exactly what it drew before they existed: the
+// social card renders it without setting them.
+uniform vec2 u_pointer;   // smoothed cursor, in gl_FragCoord pixels
+uniform float u_hover;    // 0..1, eases in while the cursor is over the hero
+uniform float u_stir;     // 0..1, how fast the cursor has been moving
+uniform vec4 u_ripple[4]; // xy: centre in pixels, z: start time, w: strength
+
 float hash21(vec2 p) {
 	p = fract(p * vec2(123.34, 456.21));
 	p += dot(p, p + 45.32);
@@ -50,14 +58,52 @@ float fbm(vec2 p) {
 	return v;
 }
 
+vec2 toField(vec2 px) {
+	return (px - 0.5 * u_res) / u_res.y + u_mouse * 0.085;
+}
+
 void main() {
-	vec2 p = (gl_FragCoord.xy - 0.5 * u_res) / u_res.y;
-	p += u_mouse * 0.085;
+	vec2 p = toField(gl_FragCoord.xy);
+
+	// Input only ever moves where the noise is sampled (q) and adds light on
+	// top; the composition below still works in screen space (p), so the dark
+	// pocket behind the headline stays where the headline is.
+	vec2 q = p;
+	float near = 0.0;
+	float lantern = 0.0;
+	if (u_hover > 0.0) {
+		vec2 d = p - toField(u_pointer);
+		float r2 = dot(d, d);
+		near = exp(-r2 * 9.0) * u_hover;
+		lantern = exp(-r2 * 6.0) * u_hover;
+		// Twist the field round the cursor, harder the faster it moves, and
+		// magnify it slightly, like looking through a drop of water.
+		float ang = near * (0.45 + 2.6 * u_stir);
+		float ca = cos(ang);
+		float sa = sin(ang);
+		q += mat2(ca, sa, -sa, ca) * d - d - d * near * 0.22;
+	}
+
+	// Clicks send out rings that shove the field outward as they pass.
+	float ring = 0.0;
+	for (int i = 0; i < 4; i++) {
+		vec4 rp = u_ripple[i];
+		float age = u_time - rp.z;
+		if (rp.w > 0.0 && age > 0.0 && age < 2.4) {
+			vec2 rd = p - toField(rp.xy);
+			float dist = length(rd);
+			float band = (dist - age * 0.72) * 15.0;
+			float life = 1.0 - age / 2.4;
+			float w = exp(-band * band) * rp.w * life * life;
+			q -= rd / max(dist, 0.001) * w * 0.1;
+			ring += w;
+		}
+	}
 
 	float t = u_time * 0.05;
 
 	// Squashing x stretches the noise into ribbons rather than blobs.
-	vec2 sp = vec2(p.x * 0.52, p.y * 1.45);
+	vec2 sp = vec2(q.x * 0.52, q.y * 1.45);
 
 	vec2 w1 = vec2(fbm(sp + vec2(0.0, t)), fbm(sp + vec2(4.1, 1.7) - t * 0.72));
 	float f1 = fbm(sp + 2.4 * w1);
@@ -84,9 +130,21 @@ void main() {
 	col += mix(ember, vec3(1.0), 0.20) * seam * 1.70;
 	col += mix(teal, vec3(1.0), 0.18) * seam2 * 0.50;
 
+	// The light the visitor adds, kept apart so that with no input it is an
+	// exact zero: a lantern under the cursor that lights whatever ribbon it is
+	// held over, filaments that flare when stirred, and the rims of ripples.
+	vec3 fx = vec3(0.0);
+	fx += (ember + violet * 0.15) * lantern * (0.18 + f1 * 0.9) * 0.5;
+	fx += mix(ember, vec3(1.0), 0.20) * seam * near * u_stir * 4.0;
+	fx += mix(ember, vec3(1.0), 0.45) * ring * (0.5 + f1) * 1.5;
+	col += fx;
+
 	// Diagonal composition: darkest at the lower left where the page begins,
 	// opening up toward the top right.
 	float lit = smoothstep(-0.75, 0.85, p.x * 0.62 + p.y * 0.95 + 0.10);
+
+	// Wherever the lantern or a ring is, the dark corner opens up too.
+	lit = max(lit, max(lantern * 0.85, ring * 0.9));
 
 	// A soft pocket of shadow behind the headline block, so the type never
 	// has to fight the backdrop for contrast.
@@ -131,7 +189,12 @@ export interface Aurora {
 	play(): void;
 	pause(): void;
 	stop(): void;
+	/** Sends a ring out from a point given in client (viewport) pixels. */
+	ripple(clientX: number, clientY: number, strength?: number): void;
 }
+
+/** Frame-rate independent easing: `rate` is the fraction covered per 60 Hz frame. */
+const ease = (rate: number, dt: number) => 1 - Math.pow(1 - rate, dt / (1000 / 60));
 
 export function startAurora(canvas: HTMLCanvasElement): Aurora | null {
 	const gl = canvas.getContext('webgl', {
@@ -166,6 +229,10 @@ export function startAurora(canvas: HTMLCanvasElement): Aurora | null {
 	const uRes = gl.getUniformLocation(prog, 'u_res');
 	const uTime = gl.getUniformLocation(prog, 'u_time');
 	const uMouse = gl.getUniformLocation(prog, 'u_mouse');
+	const uPointer = gl.getUniformLocation(prog, 'u_pointer');
+	const uHover = gl.getUniformLocation(prog, 'u_hover');
+	const uStir = gl.getUniformLocation(prog, 'u_stir');
+	const uRipple = gl.getUniformLocation(prog, 'u_ripple');
 
 	// The field is low-frequency, so half resolution is indistinguishable once
 	// the browser scales the canvas back up — and costs a quarter of the fill.
@@ -185,15 +252,50 @@ export function startAurora(canvas: HTMLCanvasElement): Aurora | null {
 	let running = false;
 	let last = performance.now();
 	let elapsed = 0;
+
+	// Whole-window parallax, as before: the field leans toward the cursor.
 	let mx = 0;
 	let my = 0;
 	let tx = 0;
 	let ty = 0;
 
+	// The cursor as the shader sees it, in canvas pixels with y up.
+	let cx = 0;
+	let cy = 0;
+	let seen = false;
+	let px = 0;
+	let py = 0;
+	let hover = 0;
+	let stir = 0;
+
+	// Four rings at once is plenty; the oldest is overwritten.
+	const ripples = new Float32Array(16);
+	let nextRipple = 0;
+
+	/** Client pixels → canvas pixels in gl_FragCoord space, or null if outside. */
+	function toCanvas(x: number, y: number) {
+		const r = canvas.getBoundingClientRect();
+		if (x < r.left || x > r.right || y < r.top || y > r.bottom) return null;
+		return [
+			((x - r.left) / r.width) * canvas.width,
+			((r.bottom - y) / r.height) * canvas.height
+		] as const;
+	}
+
 	function onPointer(e: PointerEvent) {
 		tx = (e.clientX / window.innerWidth) * 2 - 1;
 		ty = 1 - (e.clientY / window.innerHeight) * 2;
+		cx = e.clientX;
+		cy = e.clientY;
+		seen = true;
 	}
+
+	// Leaving the window, not merely an element: relatedTarget is null then.
+	function onOut(e: PointerEvent) {
+		if (!e.relatedTarget) seen = false;
+	}
+
+	const onBlur = () => (seen = false);
 
 	function frame(now: number) {
 		if (!running) return;
@@ -206,8 +308,38 @@ export function startAurora(canvas: HTMLCanvasElement): Aurora | null {
 		my += (ty - my) * 0.045;
 
 		resize();
+
+		// Checked every frame rather than on pointermove, because the page
+		// scrolls under a cursor that is standing still.
+		const at = seen ? toCanvas(cx, cy) : null;
+		if (at) {
+			// Arriving from nowhere: start the lantern under the cursor rather
+			// than have it fly in from wherever it last was.
+			if (hover < 0.02) {
+				px = at[0];
+				py = at[1];
+			}
+			const lx = px;
+			const ly = py;
+			const k = ease(0.16, dt);
+			px += (at[0] - px) * k;
+			py += (at[1] - py) * k;
+			// Speed in screen heights per second; a brisk flick is about 3.
+			const speed = Math.hypot(px - lx, py - ly) / canvas.height / (dt / 1000 || 1);
+			const want = Math.min(speed / 3, 1);
+			stir += (want - stir) * ease(want > stir ? 0.2 : 0.035, dt);
+		} else {
+			stir += (0 - stir) * ease(0.035, dt);
+		}
+		hover += ((at ? 1 : 0) - hover) * ease(0.05, dt);
+		if (hover < 0.001) hover = 0;
+
 		gl!.uniform1f(uTime, elapsed / 1000);
 		gl!.uniform2f(uMouse, mx, my);
+		gl!.uniform2f(uPointer, px, py);
+		gl!.uniform1f(uHover, hover);
+		gl!.uniform1f(uStir, stir);
+		gl!.uniform4fv(uRipple, ripples);
 		gl!.drawArrays(gl!.TRIANGLES, 0, 3);
 
 		raf = requestAnimationFrame(frame);
@@ -231,6 +363,13 @@ export function startAurora(canvas: HTMLCanvasElement): Aurora | null {
 		cancelAnimationFrame(raf);
 	}
 
+	function ripple(clientX: number, clientY: number, strength = 1) {
+		const at = toCanvas(clientX, clientY);
+		if (!at) return;
+		ripples.set([at[0], at[1], elapsed / 1000, strength], nextRipple * 4);
+		nextRipple = (nextRipple + 1) % 4;
+	}
+
 	resize();
 	// One frame immediately, so the canvas is never shown empty.
 	gl.uniform1f(uTime, 0);
@@ -238,15 +377,22 @@ export function startAurora(canvas: HTMLCanvasElement): Aurora | null {
 	gl.drawArrays(gl.TRIANGLES, 0, 3);
 
 	window.addEventListener('pointermove', onPointer, { passive: true });
+	window.addEventListener('pointerdown', onPointer, { passive: true });
+	document.addEventListener('pointerout', onOut, { passive: true });
+	window.addEventListener('blur', onBlur);
 	document.addEventListener('visibilitychange', onVisibility);
 	canvas.addEventListener('webglcontextlost', onLost);
 
 	return {
 		play,
 		pause,
+		ripple,
 		stop() {
 			pause();
 			window.removeEventListener('pointermove', onPointer);
+			window.removeEventListener('pointerdown', onPointer);
+			document.removeEventListener('pointerout', onOut);
+			window.removeEventListener('blur', onBlur);
 			document.removeEventListener('visibilitychange', onVisibility);
 			canvas.removeEventListener('webglcontextlost', onLost);
 			gl.getExtension('WEBGL_lose_context')?.loseContext();
