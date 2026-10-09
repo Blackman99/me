@@ -152,10 +152,12 @@
 	<!-- ------------------------------------------------- agent tooling -->
 	<Section id="agents" kicker={c.agents.kicker} title={c.agents.title} lede={c.agents.lede}>
 		{#snippet children()}
-			<div class="cards stack">
-				{#each c.agents.projects as p, i (p.name)}
-					<ProjectCard project={p} index={i} />
-				{/each}
+			<div class="pinned-wrap">
+				<div class="cards pinned">
+					{#each c.agents.projects as p, i (p.name)}
+						<ProjectCard project={p} index={i} />
+					{/each}
+				</div>
 			</div>
 		{/snippet}
 
@@ -167,10 +169,12 @@
 	<!-- ------------------------------------------------ open source -->
 	<Section id="oss" kicker={c.oss.kicker} title={c.oss.title} lede={c.oss.lede}>
 		{#snippet children()}
-			<div class="cards stack">
-				{#each c.oss.projects as p, i (p.name)}
-					<ProjectCard project={p} index={i} />
-				{/each}
+			<div class="pinned-wrap">
+				<div class="cards pinned">
+					{#each c.oss.projects as p, i (p.name)}
+						<ProjectCard project={p} index={i} />
+					{/each}
+				</div>
 			</div>
 		{/snippet}
 
@@ -334,6 +338,23 @@
 
 	.cards.quad {
 		grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+	}
+
+	/* The project pinned first on GitHub leads at full width; the other two
+	   share a row beneath it, which is what keeps these sections inside one
+	   laptop screen. */
+	.pinned-wrap {
+		container: pinned / inline-size;
+	}
+
+	.cards.pinned > :global(.featured) {
+		grid-column: 1 / -1;
+	}
+
+	@container pinned (min-width: 35rem) {
+		.cards.pinned {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
 	}
 
 	/* -------------------------------------------------------- domains */

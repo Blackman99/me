@@ -3,13 +3,16 @@
 
 	let { active = false }: { active?: boolean } = $props();
 
+	// The stages are codsh's own /ship pipeline, abridged: pre-flight and the
+	// design interview happen before anything worth showing.
 	const script: Line[] = [
 		{ kind: 'cmd', text: '/ship add gzip paging to the path endpoint' },
-		{ kind: 'tool', text: 'read  internal/path/handler.go' },
-		{ kind: 'tool', text: 'edit  internal/path/handler.go  +84 -31' },
-		{ kind: 'tool', text: 'bash  go test ./internal/path/...' },
+		{ kind: 'tool', text: 'spec     2 stories · gate 1 passed' },
+		{ kind: 'tool', text: 'tickets  3 slices · DAG · gate 2 passed' },
+		{ kind: 'tool', text: 'landing  3 worktrees · TDD in parallel' },
+		{ kind: 'tool', text: 'bash     go test ./internal/path/...' },
 		{ kind: 'out', text: 'ok   internal/path   1.284s' },
-		{ kind: 'ok', text: 'verified · 1 file changed · ready to push' }
+		{ kind: 'ok', text: 'done · 0 regressions · merged back clean' }
 	];
 
 	const reduced =
@@ -97,7 +100,8 @@
 		padding: 1.05rem 1.1rem 1.35rem;
 		font-size: clamp(0.72rem, 0.62rem + 0.35vw, 0.85rem);
 		line-height: 1.95;
-		min-height: 13.5rem;
+		/* Room for every line up front, so the box never grows as they print. */
+		min-height: 15rem;
 		white-space: pre-wrap;
 		word-break: break-word;
 	}

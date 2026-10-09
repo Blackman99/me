@@ -200,7 +200,7 @@
 			</p>
 			<p class="summary">
 				九年 Web 与系统工程经验，目前主要把 LLM 能力做进生产系统。我负责一个风控与合规平台的 AI
-				层——用 Claude 与 OpenAI 自动起草报告与规则集草案，替代原本人工撰写的环节——同时独立实现了底层规则引擎、对外开放 API 与 Next.js 工作台，从设计、开发、测试到云上部署全程负责。业余创建并持续维护 Sveltepress（537 star），以及编码 Agent 工具链项目；GitHub 累计约 723 star、80 个公开仓库。
+				层——用 Claude 与 OpenAI 自动起草报告与规则集草案，替代原本人工撰写的环节——同时独立实现了底层规则引擎、对外开放 API 与 Next.js 工作台，从设计、开发、测试到云上部署全程负责。业余创建并持续维护 Sveltepress（539 star），以及编码 Agent 工具链项目；GitHub 累计约 747 star、89 个公开仓库。
 			</p>
 		</header>
 
@@ -296,40 +296,53 @@
 		<div class="oss-item">
 			<div class="role-head">
 				<strong>Sveltepress <span class="org">· 创建者 / 维护者 · sveltepress.site</span></strong>
-				<span class="when"><span class="stars">537★</span> · 2022.08 至今</span>
+				<span class="when"><span class="stars">539★</span> · 2022.08 至今</span>
 			</div>
 			<p>
-				基于 SvelteKit 的内容优先站点构建工具：支持 SSR / SSG / CSR；Markdown 中可直接编写 Svelte 5
-				组件；版本化、i18n 与 Pagefind 搜索；主题可自定义并附带默认主题，全链路类型化 API。
+				基于 SvelteKit 的文档与博客 SSG：Markdown 中可直接编写 Svelte 5 Runes 与组件；不可变的文档版本；i18n 与
+				Pagefind 搜索；默认文档主题，以及带 RSS 与 OG 图的博客主题；自动生成 llms.txt。
+			</p>
+		</div>
+
+		<div class="oss-item">
+			<div class="role-head">
+				<strong>deskfolk <span class="org">· 作者 · Tauri、Svelte 5、TypeScript · Alpha</span></strong>
+				<span class="when"><span class="stars">12★</span></span>
+			</div>
+			<p>
+				local-first 桌面应用，把多天、多步、要返工的活交给常驻 AI Bot：Bot 单聊、进群、互相转交任务。进度只认应用自己的记录而不是模型的话：检查都过了才算做完，叫停是只有用户能解除的状态，监督器追踪停在半路的活。可接任意 OpenAI / Anthropic 兼容端点，或直接用 Claude Code。
 			</p>
 		</div>
 
 		<div class="oss-item">
 			<div class="role-head">
 				<strong>agent-feishu-channel <span class="org">· 作者 · TypeScript</span></strong>
-				<span class="when"><span class="stars">49★</span></span>
+				<span class="when"><span class="stars">50★</span></span>
 			</div>
 			<p>
-				将 Claude Code / Codex 会话桥接到飞书机器人：会话生命周期管理，消息与工具调用双向转发，可在 IM 内直接驱动编码 Agent。
+				让 Claude 与 Codex 作为完整的编码 Agent 跑在飞书群聊里：工具调用以审批卡片发出，进程重启会话不丢，生成中可排队、可打断。
 			</p>
 		</div>
 
 		<div class="oss-item">
 			<div class="role-head">
 				<strong>codsh <span class="org">· 作者 · TypeScript</span></strong>
-				<span class="when"><span class="stars">6★</span></span>
+				<span class="when"><span class="stars">8★</span></span>
 			</div>
-			<p>基于 DeepSeek Harness 构建的终端编码 Agent，自行实现工具调用循环与交互设计。</p>
+			<p>
+				面向 DeepSeek 及任意 OpenAI 兼容端点的终端编码 Agent，构建在 DeepSeek Harness 之上。/ship
+				通过七段流水线把一句话需求变成验证过的代码：规格、任务 DAG、git worktree 并行 TDD、验证后合并。
+			</p>
 		</div>
 
 		<div class="oss-item">
 			<div class="role-head">
 				<strong>Svelte 生态组件 <span class="org">· 作者 / 维护者</span></strong>
-				<span class="when">累计约 723★ · 80 个仓库</span>
+				<span class="when">累计约 747★ · 89 个仓库</span>
 			</div>
 			<p>
-				svelte5plus-calendar——零依赖全功能日历组件（月 / 周 / 日 / 年 / 议程视图、拖拽、重复事件、
-				i18n、暗色）；svelte-json-discovery——discovery.js JSON 结构视图的独立 Svelte 5 组件。另参与
+				svelte5plus-calendar——零依赖全功能日历组件（月 / 周 / 日 / 年 / 议程 / 资源视图、拖拽、重复事件、
+				时区、ICS）；svelte-json-discovery——discovery.js JSON 结构视图的独立 Svelte 5 组件。另参与
 				Casual-UI、headless-wysiwyg 等组织的维护。
 			</p>
 		</div>

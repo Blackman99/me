@@ -9,6 +9,14 @@ export interface Project {
 	tech: string;
 	role: string;
 	blurb: string;
+	/** The project's own one-line pitch, shown above the blurb. */
+	tagline?: string;
+	/** Short chips under the blurb. Featured cards only — they cost height. */
+	highlights?: string[];
+	/** Secondary destinations beside the repo: site, docs, download. */
+	links?: { label: string; href: string }[];
+	/** Leads its section with a larger card. One per section at most. */
+	featured?: boolean;
 }
 
 export interface Domain {
@@ -32,6 +40,9 @@ export interface SiteContent {
 		ctaPrimary: string;
 		ctaSecondary: string;
 		scroll: string;
+		/** Tells people the backdrop answers back: `stir` where the shader runs,
+		    `tap` on touch screens. */
+		hint: { stir: string; tap: string };
 		stats: { value: string; label: string }[];
 	};
 	production: {
@@ -91,7 +102,7 @@ const en: SiteContent = {
 	meta: {
 		title: 'Dongsheng Zhao — AI Full-Stack Engineer',
 		description:
-			'AI full-stack engineer, 9 years. Creator of Sveltepress (537 stars). Shipping LLMs into production compliance systems. Open to full-time remote or contract.',
+			'AI full-stack engineer, 9 years. Creator of Sveltepress (539 stars). Shipping LLMs into production compliance systems. Open to full-time remote or contract.',
 		ogImage: 'og.jpg',
 		ogAlt:
 			'Dongsheng Zhao — AI Full-Stack Engineer, 9 years, creator of Sveltepress. Open to full-time remote or contract, UTC+8.'
@@ -105,7 +116,7 @@ const en: SiteContent = {
 		contact: 'Contact'
 	},
 	hero: {
-		eyebrow: 'Creator of Sveltepress · 537 stars',
+		eyebrow: 'Creator of Sveltepress · 539 stars',
 		name: 'Dongsheng Zhao',
 		title: 'AI Full-Stack Engineer · 9 years',
 		lede: "I put LLMs inside production systems — regulatory reports drafted by Claude and OpenAI, a multi-chain risk engine underneath, a public API around it and the workbench on top. Design, build, test, deploy: on my own.",
@@ -114,10 +125,11 @@ const en: SiteContent = {
 		ctaPrimary: 'View my work',
 		ctaSecondary: 'Email me',
 		scroll: 'Scroll',
+		hint: { stir: 'Move to stir · click to ripple', tap: 'Tap to ripple' },
 		stats: [
 			{ value: '9', label: 'years shipping' },
-			{ value: '723', label: 'GitHub stars' },
-			{ value: '80', label: 'public repos' },
+			{ value: '747', label: 'GitHub stars' },
+			{ value: '89', label: 'public repos' },
 			{ value: '4', label: 'open-source orgs' }
 		]
 	},
@@ -159,35 +171,44 @@ const en: SiteContent = {
 	},
 	agents: {
 		kicker: 'Open source · AI and agents',
-		title: 'Tools that drive coding agents',
-		lede: 'I spend a lot of time inside coding agents, so I build the parts that are missing.',
+		title: 'Hand work to agents, then check it is done',
+		lede: 'I spend most days inside coding agents, so I build the parts they are missing.',
 		projects: [
 			{
-				name: 'agent-feishu-channel',
-				href: 'https://github.com/Blackman99/agent-feishu-channel',
-				stars: 49,
-				tech: 'TypeScript',
-				role: 'Author',
+				name: 'deskfolk',
+				href: 'https://github.com/Blackman99/deskfolk',
+				stars: 12,
+				tech: 'Tauri / Svelte 5',
+				role: 'Author · alpha',
+				featured: true,
+				tagline: 'Hand it off. Walk away. Return to results.',
 				blurb:
-					'Bridges Claude Code and Codex sessions into a Feishu (Lark) bot — session lifecycle, plus two-way relay of messages and tool calls. Drive a coding agent from the chat client you already have open.'
+					'A local-first desktop app for multi-day, multi-step jobs. Persistent Bots chat, join groups and hand work to each other — and when one says done, the app checks first.',
+				highlights: ['Done = checks pass', 'Stop is a state', 'Any endpoint, or Claude Code'],
+				links: [
+					{ label: 'Website', href: 'https://blackman99.github.io/deskfolk/' },
+					{ label: 'Download', href: 'https://github.com/Blackman99/deskfolk/releases/latest' }
+				]
 			},
 			{
 				name: 'codsh',
 				href: 'https://github.com/Blackman99/codsh',
-				stars: 6,
+				stars: 8,
 				tech: 'TypeScript',
 				role: 'Author',
 				blurb:
-					'A terminal coding agent on the DeepSeek harness, with its own tool-call loop and interaction design. One sentence to /ship, and it comes back verified.'
+					'Terminal coding agent for DeepSeek and any OpenAI-compatible endpoint. /ship takes one sentence to verified code: spec, ticket DAG, parallel TDD worktrees, clean merge.',
+				links: [{ label: 'Gallery', href: 'https://blackman99.github.io/codsh/gallery.html' }]
 			},
 			{
-				name: 'deskfolk',
-				href: 'https://github.com/Blackman99/deskfolk',
-				stars: 6,
-				tech: 'Tauri / Svelte 5',
+				name: 'agent-feishu-channel',
+				href: 'https://github.com/Blackman99/agent-feishu-channel',
+				stars: 50,
+				tech: 'TypeScript',
 				role: 'Author',
 				blurb:
-					'Alpha. A local-first macOS app for persistent AI teammates — bots that chat one to one, join groups and hand work to each other, over a split-pane workbench with real terminals and a flow board per job. Bring your own OpenAI-compatible endpoints and MCP servers.'
+					'Claude and Codex, natively in Feishu (Lark): a full coding-agent session in a group chat, tool calls as approval cards, sessions that survive restarts.',
+				links: [{ label: 'Docs', href: 'https://blackman99.github.io/agent-feishu-channel/' }]
 			}
 		]
 	},
@@ -199,29 +220,35 @@ const en: SiteContent = {
 			{
 				name: 'Sveltepress',
 				href: 'https://github.com/SveltePress/sveltepress',
-				stars: 537,
+				stars: 539,
 				tech: 'SvelteKit',
 				role: 'Creator and maintainer',
+				featured: true,
+				tagline: 'Write Markdown, keep the full power of SvelteKit.',
 				blurb:
-					'A content-first site builder on SvelteKit: SSR, SSG and CSR; Svelte 5 components written straight into Markdown; versioning, i18n and Pagefind search; themeable, with a default theme and a fully typed API end to end.'
+					'A docs and blog SSG on SvelteKit: Svelte 5 runes and components in Markdown, immutable doc versions, i18n, Pagefind search, and a blog theme with RSS and OG images.',
+				highlights: ['Svelte 5 in Markdown', 'Versioned docs', 'i18n · Pagefind', 'llms.txt built in'],
+				links: [{ label: 'sveltepress.site', href: 'https://sveltepress.site' }]
 			},
 			{
 				name: 'svelte5plus-calendar',
 				href: 'https://github.com/Blackman99/svelte5plus-calendar',
-				stars: 5,
+				stars: 12,
 				tech: 'Svelte 5',
 				role: 'Author',
 				blurb:
-					'A full calendar with zero dependencies — month, week, day, year and agenda views, drag and drop, recurring events, i18n and dark mode.'
+					'Every calendar view in one zero-dependency component, month to agenda plus resources — with drag and drop, recurrence, time zones and ICS.',
+				links: [{ label: 'Docs', href: 'https://blackman99.github.io/svelte5plus-calendar/' }]
 			},
 			{
 				name: 'svelte-json-discovery',
 				href: 'https://github.com/Blackman99/svelte-json-discovery',
-				stars: 5,
+				stars: 6,
 				tech: 'Svelte 5',
 				role: 'Author',
 				blurb:
-					'The discovery.js JSON struct view, lifted out into a standalone Svelte 5 component you can drop anywhere.'
+					'The discovery.js struct view as a standalone Svelte 5 component — type-aware previews, windowed collections, search, table and diff views.',
+				links: [{ label: 'Docs', href: 'https://blackman99.github.io/svelte-json-discovery/' }]
 			}
 		]
 	},
@@ -333,7 +360,7 @@ const zh: SiteContent = {
 	meta: {
 		title: '赵东升 — AI 全栈工程师',
 		description:
-			'AI 全栈工程师，9 年经验。Sveltepress 作者(537 star)。把 LLM 能力做进生产级合规系统。可接全职远程或合同制。',
+			'AI 全栈工程师，9 年经验。Sveltepress 作者(539 star)。把 LLM 能力做进生产级合规系统。可接全职远程或合同制。',
 		ogImage: 'og-zh.jpg',
 		ogAlt: '赵东升 — AI 全栈工程师，9 年经验，Sveltepress 作者。可接全职远程或合同制，UTC+8。'
 	},
@@ -346,7 +373,7 @@ const zh: SiteContent = {
 		contact: '联系'
 	},
 	hero: {
-		eyebrow: 'Sveltepress 作者 · 537 star',
+		eyebrow: 'Sveltepress 作者 · 539 star',
 		name: '赵东升',
 		title: 'AI 全栈工程师 · 9 年经验',
 		lede: '我把 LLM 放进生产系统：合规报告由 Claude 与 OpenAI 起草，底下是多链风控引擎，外面包一层开放 API，上面是工作台。设计、开发、测试、部署，一个人走完。',
@@ -355,10 +382,11 @@ const zh: SiteContent = {
 		ctaPrimary: '看我的作品',
 		ctaSecondary: '给我写信',
 		scroll: '向下滚动',
+		hint: { stir: '移动光标搅动 · 点击泛起涟漪', tap: '轻触泛起涟漪' },
 		stats: [
 			{ value: '9', label: '年工程经验' },
-			{ value: '723', label: 'GitHub star' },
-			{ value: '80', label: '公开仓库' },
+			{ value: '747', label: 'GitHub star' },
+			{ value: '89', label: '公开仓库' },
 			{ value: '4', label: '开源组织' }
 		]
 	},
@@ -400,35 +428,44 @@ const zh: SiteContent = {
 	},
 	agents: {
 		kicker: '开源 · AI 与 Agent',
-		title: '驱动编码 Agent 的工具',
-		lede: '我大量时间泡在编码 Agent 里，缺什么就自己补什么。',
+		title: '把活交给 Agent，再确认它真的做完了',
+		lede: '我大部分时间泡在编码 Agent 里，缺什么就自己补什么。',
 		projects: [
 			{
-				name: 'agent-feishu-channel',
-				href: 'https://github.com/Blackman99/agent-feishu-channel',
-				stars: 49,
-				tech: 'TypeScript',
-				role: '作者',
+				name: 'deskfolk',
+				href: 'https://github.com/Blackman99/deskfolk',
+				stars: 12,
+				tech: 'Tauri / Svelte 5',
+				role: '作者 · Alpha',
+				featured: true,
+				tagline: '交出去，离开，回来看结果。',
 				blurb:
-					'把 Claude Code / Codex 会话桥接到飞书机器人：会话生命周期管理，消息与工具调用双向转发。在你本来就开着的 IM 里直接驱动编码 Agent。'
+					'面向多天、多步、要返工的活的 local-first 桌面应用。常驻 Bot 单聊、进群、互相转交任务；Bot 说做完了，应用先核过。',
+				highlights: ['做完由检查说了算', '叫停是一种状态', '任意端点，或 Claude Code'],
+				links: [
+					{ label: '官网', href: 'https://blackman99.github.io/deskfolk/zh' },
+					{ label: '下载', href: 'https://github.com/Blackman99/deskfolk/releases/latest' }
+				]
 			},
 			{
 				name: 'codsh',
 				href: 'https://github.com/Blackman99/codsh',
-				stars: 6,
+				stars: 8,
 				tech: 'TypeScript',
 				role: '作者',
 				blurb:
-					'基于 DeepSeek Harness 的终端编码 Agent，自行实现工具调用循环与交互设计。一句话 /ship，回来的是验证过的代码。'
+					'面向 DeepSeek 及任意 OpenAI 兼容端点的终端编码 Agent。/ship 把一句话变成验证过的代码：规格、任务 DAG、并行 worktree 跑 TDD，最后干净合并。',
+				links: [{ label: '画廊', href: 'https://blackman99.github.io/codsh/gallery.zh.html' }]
 			},
 			{
-				name: 'deskfolk',
-				href: 'https://github.com/Blackman99/deskfolk',
-				stars: 6,
-				tech: 'Tauri / Svelte 5',
+				name: 'agent-feishu-channel',
+				href: 'https://github.com/Blackman99/agent-feishu-channel',
+				stars: 50,
+				tech: 'TypeScript',
 				role: '作者',
 				blurb:
-					'Alpha 阶段。local-first 的 macOS 应用，常驻 AI 队友：Bot 单聊、进群、互相转交任务，配分屏工作台与常驻终端，每个任务实时画成流程看板。模型端点兼容 OpenAI，MCP 工具自带。'
+					'Claude 与 Codex 原生进飞书：在群聊里跑完整的编码 Agent 会话，工具调用变成审批卡片，进程重启会话不丢。',
+				links: [{ label: '文档', href: 'https://blackman99.github.io/agent-feishu-channel/' }]
 			}
 		]
 	},
@@ -440,27 +477,33 @@ const zh: SiteContent = {
 			{
 				name: 'Sveltepress',
 				href: 'https://github.com/SveltePress/sveltepress',
-				stars: 537,
+				stars: 539,
 				tech: 'SvelteKit',
 				role: '创建者 / 维护者',
+				featured: true,
+				tagline: '写 Markdown，保留 SvelteKit 的全部能力。',
 				blurb:
-					'基于 SvelteKit 的内容优先站点构建工具：支持 SSR / SSG / CSR;Markdown 里可以直接写 Svelte 5 组件；版本化、i18n 与 Pagefind 搜索；主题可自定义并附带默认主题，全链路类型化 API。'
+					'基于 SvelteKit 的文档与博客 SSG：Markdown 里直接写 Svelte 5 Runes 与组件；不可变的文档版本；i18n 与 Pagefind 搜索；文档主题，以及带 RSS 与 OG 图的博客主题。',
+				highlights: ['Markdown 里写 Svelte 5', '文档版本化', 'i18n · Pagefind', '内置 llms.txt'],
+				links: [{ label: 'sveltepress.site', href: 'https://sveltepress.site' }]
 			},
 			{
 				name: 'svelte5plus-calendar',
 				href: 'https://github.com/Blackman99/svelte5plus-calendar',
-				stars: 5,
+				stars: 12,
 				tech: 'Svelte 5',
 				role: '作者',
-				blurb: '零依赖的全功能日历：月 / 周 / 日 / 年 / 议程视图，拖拽，重复事件，i18n 与暗色模式。'
+				blurb: '一个零依赖组件装下所有日历视图，从月视图到议程，外加资源视图。拖拽、重复事件、时区、ICS 导入导出。',
+				links: [{ label: '文档', href: 'https://blackman99.github.io/svelte5plus-calendar/' }]
 			},
 			{
 				name: 'svelte-json-discovery',
 				href: 'https://github.com/Blackman99/svelte-json-discovery',
-				stars: 5,
+				stars: 6,
 				tech: 'Svelte 5',
 				role: '作者',
-				blurb: '把 discovery.js 的 JSON 结构视图抽成独立的 Svelte 5 组件，哪里都能塞。'
+				blurb: '把 discovery.js 的 struct 视图抽成独立的 Svelte 5 组件：按类型预览、大集合窗口化读取、搜索、表格与 Diff 视图。',
+				links: [{ label: '文档', href: 'https://blackman99.github.io/svelte-json-discovery/' }]
 			}
 		]
 	},
