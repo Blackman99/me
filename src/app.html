@@ -2,17 +2,41 @@
 <html lang="%lang%">
 	<head>
 		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 		<meta name="color-scheme" content="dark" />
-		<meta name="theme-color" content="#08090b" />
+		<meta name="theme-color" content="#060608" />
 		<link rel="icon" href="%sveltekit.assets%/favicon.svg" />
 		<link rel="apple-touch-icon" href="%sveltekit.assets%/apple-touch-icon.png" />
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<!-- Space Grotesk as a variable font: the hero's letters thicken towards the cursor. -->
 		<link
 			rel="stylesheet"
-			href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+			href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&family=JetBrains+Mono:wght@400;500&family=Instrument+Serif:ital@1&display=swap"
 		/>
+		<noscript>
+			<style>
+				.loader {
+					display: none;
+				}
+				[data-reveal],
+				[data-in] {
+					opacity: 1;
+					transform: none;
+					filter: none;
+				}
+				[data-split] .sw > span,
+				.ch {
+					transform: none;
+				}
+				.wd {
+					opacity: 1;
+				}
+				.odo-s {
+					transform: translateY(calc(var(--to) * -1em));
+				}
+			</style>
+		</noscript>
 		%sveltekit.head%
 	</head>
 	<body data-sveltekit-preload-data="hover">

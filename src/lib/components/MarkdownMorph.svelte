@@ -1,12 +1,28 @@
 <script lang="ts">
-	let { active = false }: { active?: boolean } = $props();
+	let { clickable }: { clickable: string } = $props();
 
 	// The counter on the right is a real Svelte component, not a picture of one.
 	// That is the whole pitch of Sveltepress, so the demo had better be honest.
 	let count = $state(0);
+
+	// Types itself in the first time it slides into view.
+	let active = $state(false);
+	let el: HTMLElement;
+	$effect(() => {
+		const io = new IntersectionObserver(
+			([e]) => {
+				if (!e.isIntersecting) return;
+				active = true;
+				io.disconnect();
+			},
+			{ threshold: 0.4 }
+		);
+		io.observe(el);
+		return () => io.disconnect();
+	});
 </script>
 
-<div class="morph" class:active>
+<div class="morph" class:active bind:this={el}>
 	<div class="pane src">
 		<div class="tab">docs/index.md</div>
 		<pre><code
@@ -41,7 +57,7 @@
 			<h4>Getting started</h4>
 			<p>Write Svelte right here:</p>
 			<button onclick={() => (count += 1)}>{count}</button>
-			<span class="hint">really clickable</span>
+			<span class="hint">{clickable}</span>
 		</div>
 	</div>
 </div>

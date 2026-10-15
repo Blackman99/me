@@ -6,8 +6,24 @@
 	import type { Lang } from '$lib/content';
 	import { GRAPH_CAPTION } from '$lib/content';
 
-	let { active = false, lang = 'en' }: { active?: boolean; lang?: Lang } = $props();
+	let { lang = 'en' }: { lang?: Lang } = $props();
 	const caption = $derived(GRAPH_CAPTION[lang]);
+
+	// Draws itself the first time a good part of it is on screen.
+	let active = $state(false);
+	let fig: HTMLElement;
+	$effect(() => {
+		const io = new IntersectionObserver(
+			([e]) => {
+				if (!e.isIntersecting) return;
+				active = true;
+				io.disconnect();
+			},
+			{ threshold: 0.35 }
+		);
+		io.observe(fig);
+		return () => io.disconnect();
+	});
 
 	type Node = { id: string; x: number; y: number; label: string; kind: 'src' | 'hop' | 'flag' };
 
@@ -43,7 +59,7 @@
 		.join(' ');
 </script>
 
-<figure class="wrap" class:active aria-hidden="true">
+<figure class="wrap" class:active aria-hidden="true" bind:this={fig}>
 	<svg viewBox="0 0 460 300" role="presentation">
 		<defs>
 			<linearGradient id="trace" x1="0" y1="0" x2="1" y2="0">

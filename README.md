@@ -1,8 +1,11 @@
 # me
 
 Personal site for Dongsheng Zhao — AI full-stack engineer, creator of
-[Sveltepress](https://sveltepress.site). Seven full-screen sections, English and
-Chinese, built with SvelteKit and deployed as a static site to GitHub Pages.
+[Sveltepress](https://sveltepress.site). One long scroll in English and Chinese,
+built with SvelteKit, deployed as a static site to GitHub Pages, and dressed in
+the effects of [Lumen Landing](https://github.com/Blackman99/curio/tree/main/lumen-landing):
+raymarched liquid chrome, a 24,000-particle morph, scroll-lit type and a cursor
+that everything leans towards.
 
 中文说明见 [README.zh.md](./README.zh.md)。
 
@@ -11,11 +14,13 @@ Chinese, built with SvelteKit and deployed as a static site to GitHub Pages.
 | Path | What it holds |
 | --- | --- |
 | `src/lib/content.ts` | Every string on the site, in both languages. Edit copy here and nowhere else. |
-| `src/lib/components/` | The sections and the three hand-drawn visuals (chain graph, terminal, Markdown → Svelte). |
-| `src/lib/aurora.ts` | The hero's WebGL backdrop — one fragment shader, no dependencies. |
+| `src/lib/components/` | The sections. Markup only, plus the two hand-drawn figures (fund-path graph, Markdown → Svelte). |
+| `src/lib/fx/index.ts` | Every effect, wired onto the prerendered markup and driven by one `requestAnimationFrame` loop. |
+| `src/lib/fx/gl.ts` | The two WebGL2 programs: hero chrome and particle engine. |
+| `src/lib/fx/shaders.ts` | Their GLSL and the colour palettes, shared with the social card script. |
+| `src/lib/text.ts` | Splits copy into the character and word spans the animations need, at render time. |
+| `src/app.css` | The whole stylesheet: tokens, sections, the reduced-motion and print paths. |
 | `scripts/build-og.mjs` | Renders the social preview cards and the touch icon. |
-| `src/lib/reveal.ts` | The IntersectionObserver action behind the scroll-in animations. |
-| `src/app.css` | Design tokens, the full-screen paging rules and the reduced-motion fallback. |
 | `scripts/cv.html`, `scripts/cv.zh.html` | Sources of the English and Chinese CVs. |
 | `static/` | Built CV PDFs, social cards, icons, `robots.txt`, `sitemap.xml`. |
 
@@ -28,6 +33,10 @@ pnpm check      # svelte-check, must stay at 0 errors 0 warnings
 pnpm build      # static output in build/
 pnpm preview    # serve build/ locally
 ```
+
+Copy may carry two bits of markup: `*word*` sets a word in the display italic
+(the accent gradient in Chinese), and `\n` breaks a line — in section titles every
+line after the first is dimmed.
 
 ## The CV PDF
 
@@ -47,10 +56,8 @@ module and hero shader, so the card cannot drift away from the page it links to:
 pnpm build:og      # needs Playwright and Chrome
 ```
 
-Output is deterministic — the shader is drawn at a fixed time, chosen by sampling
-luminance across the animation so the field is bright overall but dark exactly
-where the text sits. They are JPEG rather than PNG because the backdrop is a
-continuous gradient: ~100 KB against ~700 KB for a visually identical file.
+Output is deterministic — the chrome is drawn at a fixed time with the cursor's
+blob parked at a fixed spot, so rebuilding without changes gives identical bytes.
 
 The cards deliberately carry claims that stay true (`9 years`, `500+ stars on one
 project`) rather than the exact counts on the page. Social platforms cache these
@@ -76,59 +83,53 @@ update `SITE_URL` in `src/lib/content.ts`, and update the absolute URLs in
 
 ## Design notes
 
-**Full-screen paging is conditional.** Every section is laid out to fit inside a
-viewport of at least 992 × 768, and `scroll-snap-type: y mandatory` is switched on
-only at that size. Anywhere smaller — phones, short windows — it falls back to
-`proximity`, because mandatory snapping on a section taller than the viewport
-strands the content nobody can scroll to.
+**Prerendered first, animated second.** Every word on the page is in the static
+HTML, already split into the spans the animations use, so search engines and
+link previews see the full text and nothing reflows when the script arrives. The
+effects module then attaches to that markup by id; it renders no content of its
+own.
 
-**The hero backdrop is a shader, and it is optional.** `src/lib/aurora.ts` is a
-single domain-warped noise fragment shader on one triangle — raw WebGL, no scene
-library, 8.9 KB (4 KB gzipped). It is imported dynamically after the `load`
-event, so it is never on the critical path, and it renders at half resolution
-because the field is low-frequency enough that nobody can tell.
+**One loop, and only what is on screen.** A single `requestAnimationFrame` loop
+drives the hero, the marquee, the manifesto, the particles, the side-scroll, the
+live cards and the cursor. An IntersectionObserver keeps a visibility map, and
+each block runs only while its section is within 120px of the viewport — the
+GPU is idle unless the hero or the engine is in view. The hero renders at
+0.62× resolution and steps down further whenever the frame rate drops below 48.
 
-**It answers the pointer.** A lantern follows the cursor and lights whichever
-ribbon it is held over, even in the dark corner; moving fast twists the field
-into a vortex and flares the filaments; a click sends out a ring that shoves the
-field aside as it passes, and one ring goes out on its own as the shader fades
-in, so the backdrop shows it can move before anyone tries. All of it displaces
-where the noise is sampled or adds light on top — the dark pocket behind the
-headline stays put, so the copy never loses its contrast. With no input every
-interaction term is an exact zero: the social card renders pixel-identical to
-the shader before any of this existed.
+**The hero is raymarched.** Six metaballs and the cursor's own blob are one
+smooth signed-distance field, marched 64 steps per pixel and shaded as
+iridescent chrome against a procedural studio. The headline is a variable font;
+each letter thickens as the cursor nears it.
 
-Everywhere else the CSS layer does what it can without a GPU: a patch of grid
-lights up under the pointer or finger, and a click or tap sends out a CSS ring.
-Links and buttons are left alone.
+**The particle engine** holds 24,000 points with four destinations each: the
+initials, a sphere, a (2,3) torus knot and a three-armed galaxy. Scrolling picks
+where they are between two shapes; the vertex shader gives every point its own
+delay and a burst of turbulence mid-flight.
 
-It only runs on a viewport of at least 992 px with a fine pointer, at least four
-cores, and no reduced-motion preference. Phones, tablets and anyone who asked for
-less motion get the CSS backdrop underneath instead and never download the
-module at all: 11 JS chunks on desktop, 10 everywhere else.
+**The palette is live.** The button beside the language switch (or the `p` key)
+cycles four palettes with a circular view transition; the CSS accents and both
+shaders change together, and the choice is remembered.
 
-An IntersectionObserver pauses it the moment the hero leaves the screen —
-measured as exactly zero `drawArrays` calls while any other section is in view —
-and `visibilitychange` pauses it for a backgrounded tab.
+**Language hops tear down cleanly.** `/` and `/zh/` share one component.
+Moving between them is a client-side navigation: the effects module removes
+every listener, observer, timer and GL context it made, and the new page skips
+the boot loader.
 
-**Everything else is CSS.** Reveals run on one IntersectionObserver action; the
-scroll progress bar and the hero's scroll-away both use scroll-linked animation
-behind an `@supports` guard and are simply absent where that is unsupported. The
-headline wipe, its specular sheen and the travelling highlight on the badge are
-plain keyframes. Outside the shader, JavaScript only animates the stat count-up
-— the stats reserve their final width so it cannot shift the layout — and tells
-the backdrop where the pointer is; the rings themselves are keyframes.
+**Full-screen paging is gone.** The old site snapped section by section; the
+manifesto, the particle engine and the open-source track are each several
+screens of scroll on purpose, which snapping would fight.
 
-Measured on the built site: LCP ≈ 0.46 s, CLS 0, ~60 fps throughout, 61 KiB
-transferred on desktop and 58 KiB on a phone.
+Measured on the build: the home page is 82 KB gzipped — HTML, CSS and JS,
+fonts excluded.
 
-**`prefers-reduced-motion` is a real path, not an afterthought.** It disables
-snapping, collapses every transition, forces all revealed content visible, drops
-the headline wipe and sheen, fills the stats in immediately, skips the shader
-entirely, and leaves the backdrop inert to the pointer.
+**`prefers-reduced-motion` is a real path.** The loader shortens to a blink, the
+clock that drives the shaders, marquee and spring stops, reveals appear without
+sliding or blurring, and every CSS animation is paused. The motion switch in the
+Playground does the same on demand. Without JavaScript the loader never shows
+and every word is visible.
 
 **The Sveltepress demo is a live Svelte component**, not a screenshot of one —
-the counter in the "Open source" section really counts.
+the counter in the open-source track really counts.
 
 ## Licence
 

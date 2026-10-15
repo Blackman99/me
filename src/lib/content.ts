@@ -26,35 +26,80 @@ export interface Domain {
 	current?: boolean;
 }
 
+/** A card about the page itself rather than a project: live frame graph,
+    page weight, the motion switch. */
+interface PageCard {
+	tag: string;
+	title: string;
+	body: string;
+}
+
+/*
+ * Markup inside strings, kept deliberately tiny:
+ *   `*word*`  set in the display italic (the accent gradient in Chinese)
+ *   `\n`      a line break; in section titles every line after the first is dimmed
+ */
 export interface SiteContent {
 	locale: string;
 	meta: { title: string; description: string; ogImage: string; ogAlt: string };
-	nav: { work: string; ai: string; oss: string; play: string; domains: string; contact: string };
+	nav: {
+		work: string;
+		ai: string;
+		oss: string;
+		play: string;
+		domains: string;
+		contact: string;
+		cv: string;
+	};
+	loader: { label: string; ready: string };
 	hero: {
 		eyebrow: string;
 		name: string;
+		/** The giant headline. Its letters thicken as the cursor nears them. */
+		headline: string;
 		title: string;
-		lede: string;
+		sub: string;
 		availability: string;
 		place: string;
 		ctaPrimary: string;
 		ctaSecondary: string;
-		scroll: string;
-		/** Tells people the backdrop answers back: `stir` where the shader runs,
-		    `tap` on touch screens. */
-		hint: { stir: string; tap: string };
+		hint: string;
+		hud: { fps: string; scale: string; gpu: string; palette: string };
 		stats: { value: string; label: string }[];
+	};
+	manifesto: { kicker: string; text: string };
+	engine: {
+		kicker: string;
+		hint: string;
+		stages: { label: string; title: string; body: string }[];
 	};
 	production: {
 		kicker: string;
 		title: string;
 		context: string;
-		bullets: { head: string; body: string }[];
-		highlight: { head: string; body: string };
+		bullets: { tag: string; head: string; body: string }[];
+		highlight: { tag: string; head: string; body: string; chips: string[] };
 	};
-	agents: { kicker: string; title: string; lede: string; projects: Project[] };
-	oss: { kicker: string; title: string; lede: string; projects: Project[] };
-	play: { kicker: string; title: string; lede: string; projects: Project[] };
+	agents: { kicker: string; title: string; lede: string; terminal: string; projects: Project[] };
+	oss: {
+		kicker: string;
+		title: string;
+		lede: string;
+		demo: { title: string; body: string; clickable: string };
+		projects: Project[];
+	};
+	stats: { label: string };
+	play: {
+		kicker: string;
+		title: string;
+		lede: string;
+		projects: Project[];
+		page: {
+			fps: PageCard;
+			weight: PageCard & { unit: string };
+			motion: PageCard & { on: string; off: string; yours: string };
+		};
+	};
 	domains: {
 		kicker: string;
 		title: string;
@@ -69,6 +114,8 @@ export interface SiteContent {
 		lede: string;
 		availability: string;
 		overlap: string;
+		cta: string;
+		sent: string;
 		emailLabel: string;
 		githubLabel: string;
 		blogLabel: string;
@@ -77,7 +124,10 @@ export interface SiteContent {
 		cvFile: string;
 		footer: string;
 	};
-	a11y: { langToggle: string; toTop: string; sectionNav: string };
+	footer: { giant: string; time: string };
+	/** Words shown inside the cursor ring over things that react. */
+	cursor: { hue: string; play: string; decode: string; write: string; open: string };
+	a11y: { langToggle: string; toTop: string; sectionNav: string; palette: string };
 }
 
 export const EMAIL = 'dongshengzhao47@gmail.com';
@@ -97,6 +147,23 @@ export const GRAPH_CAPTION: Record<Lang, { verdict: string; detail: string }> = 
 	zh: { verdict: '高风险', detail: '3 跳 · 命中制裁名单' }
 };
 
+/** The two marquee rows. Proper nouns, so one list serves both languages. */
+export const MARQUEE = [
+	'Claude',
+	'OpenAI',
+	'DeepSeek',
+	'SvelteKit',
+	'React 19',
+	'Go',
+	'Rust',
+	'Tauri',
+	'WebGL2',
+	'PostgreSQL'
+];
+
+/** The particle engine starts as these letters. */
+export const GLYPH = 'DZ';
+
 const en: SiteContent = {
 	locale: 'en',
 	meta: {
@@ -113,19 +180,22 @@ const en: SiteContent = {
 		oss: 'Open source',
 		play: 'Playground',
 		domains: 'Domains',
-		contact: 'Contact'
+		contact: 'Contact',
+		cv: 'CV'
 	},
+	loader: { label: 'DZ / boot', ready: 'hello' },
 	hero: {
 		eyebrow: 'Creator of Sveltepress · 539 stars',
 		name: 'Dongsheng Zhao',
+		headline: 'Dongsheng\n*Zhao.*',
 		title: 'AI Full-Stack Engineer · 9 years',
-		lede: "I put LLMs inside production systems — regulatory reports drafted by Claude and OpenAI, a multi-chain risk engine underneath, a public API around it and the workbench on top. Design, build, test, deploy: on my own.",
+		sub: 'I put LLMs inside production systems, and own everything around them — engine, API, workbench, deploy.',
 		availability: 'Open to full-time remote or contract',
 		place: 'UTC+8 · Hefei, China · working English',
 		ctaPrimary: 'View my work',
 		ctaSecondary: 'Email me',
-		scroll: 'Scroll',
-		hint: { stir: 'Move to stir · click to ripple', tap: 'Tap to ripple' },
+		hint: 'Move your cursor — the chrome follows it',
+		hud: { fps: 'FPS', scale: 'Render scale', gpu: 'GPU', palette: 'Palette' },
 		stats: [
 			{ value: '9', label: 'years shipping' },
 			{ value: '747', label: 'GitHub stars' },
@@ -133,46 +203,85 @@ const en: SiteContent = {
 			{ value: '4', label: 'open-source orgs' }
 		]
 	},
+	manifesto: {
+		kicker: 'How I work',
+		text: 'I put *LLMs* inside *production* systems — regulatory reports drafted by Claude and OpenAI, a multi-chain risk engine underneath, a public API around it and the workbench on top. Design, build, test, deploy: on my *own.*'
+	},
+	engine: {
+		kicker: 'End to end',
+		hint: 'Scroll to morph · move to orbit',
+		stages: [
+			{
+				label: '01 / Design',
+				title: 'It starts as two letters.',
+				body: '24,000 particles sampled from my initials, running on your GPU. Keep scrolling: this is a feature going end to end.'
+			},
+			{
+				label: '02 / Build',
+				title: 'Then it takes shape.',
+				body: 'Model calls, engine, API, workbench. With the whole stack in one pair of hands, nothing is lost in a handoff.'
+			},
+			{
+				label: '03 / Test',
+				title: 'Then it has to hold together.',
+				body: 'A (2,3) torus knot. Every particle leaves on its own delay, with turbulence that peaks mid-flight — like the edge cases.'
+			},
+			{
+				label: '04 / Ship',
+				title: 'Then it goes out into the world.',
+				body: 'Three spiral arms, additive blending, zero textures. Move your cursor: it is all live.'
+			}
+		]
+	},
 	production: {
 		kicker: 'What I am building now',
-		title: 'LLMs inside a crypto compliance platform',
+		title: 'LLMs inside a crypto\ncompliance platform',
 		context:
 			'A crypto AML/KYT compliance SaaS. I own the AI layer and the whole stack beneath it — screening engine, public API, workbench, and the pipeline that puts it on a server.',
 		bullets: [
 			{
+				tag: 'LLM',
 				head: 'Regulatory writing, done by the model',
 				body: 'On-chain risk data and rule hits are fed to Claude and OpenAI, which draft STR/SAR reports, compliance policies and rule-set proposals — replacing a step that used to be written by hand.'
 			},
 			{
+				tag: 'Screening',
 				head: 'KYA / KYT screening engine',
 				body: 'Multi-hop fund-path tracing that surfaces high-risk counterparties, sanctions and blacklist hits, then returns a graded risk verdict.'
 			},
 			{
+				tag: 'Rules',
 				head: 'Configurable rule sets',
 				body: 'Path-level detection routed by scenario — deposit, withdrawal, CDD, ongoing monitoring — so compliance teams change policy without shipping code.'
 			},
 			{
+				tag: 'API',
 				head: 'Public API, v2 and v3',
 				body: 'Async polling with API-key auth, address-monitoring alerts, webhooks and quota billing, across Ethereum, Tron and Base.'
 			},
 			{
+				tag: 'Workbench',
 				head: 'The workbench',
 				body: 'Next.js 16 and React 19 in TypeScript: screening, batch checks, graph exploration, reports and monitoring, on SWR and Zustand.'
 			},
 			{
+				tag: 'Ops',
 				head: 'Ship and keep it up',
 				body: 'Led a full cloud migration, built the CI/CD on GitHub Actions — atomic Go binary swaps, layered backups, rollback in seconds — and own production incidents.'
 			}
 		],
 		highlight: {
+			tag: 'Highlight',
 			head: 'Rewrote path investigation',
-			body: 'Uploading the whole graph became server-side detection with gzipped parallel paging. A single screening run got dramatically faster.'
+			body: 'Uploading the whole graph became server-side detection with gzipped parallel paging. A single screening run got dramatically faster.',
+			chips: ['Server-side detection', 'gzip', 'Parallel paging']
 		}
 	},
 	agents: {
 		kicker: 'Open source · AI and agents',
-		title: 'Hand work to agents, then check it is done',
+		title: 'Hand work to agents,\nthen check it is done',
 		lede: 'I spend most days inside coding agents, so I build the parts they are missing.',
+		terminal: '~/work — codsh',
 		projects: [
 			{
 				name: 'deskfolk',
@@ -214,8 +323,13 @@ const en: SiteContent = {
 	},
 	oss: {
 		kicker: 'Open source · Svelte ecosystem',
-		title: 'Sveltepress, and what grew around it',
+		title: 'Sveltepress, and what\ngrew around it',
 		lede: 'Maintained since August 2022. Most of my GitHub stars come from here.',
+		demo: {
+			title: 'Svelte, right inside Markdown',
+			body: 'The counter is a real Svelte component, not a picture of one. That is the whole pitch of Sveltepress, so the demo had better be honest.',
+			clickable: 'really clickable'
+		},
 		projects: [
 			{
 				name: 'Sveltepress',
@@ -252,10 +366,32 @@ const en: SiteContent = {
 			}
 		]
 	},
+	stats: { label: 'In numbers' },
 	play: {
 		kicker: 'Playground',
-		title: 'Built because they were fun',
+		title: 'Built because\nthey were fun',
 		lede: 'Some of these have more stars than the serious ones. I have made peace with it.',
+		page: {
+			fps: {
+				tag: 'This page',
+				title: 'Frame-perfect, measured live',
+				body: "Your browser's real frame timeline, right now. One requestAnimationFrame loop drives every effect on this site."
+			},
+			weight: {
+				tag: 'This page',
+				title: 'Weighed on arrival',
+				body: 'Compressed bytes this visit downloaded. No animation library: two WebGL programs and a physics loop.',
+				unit: 'KB'
+			},
+			motion: {
+				tag: 'This page',
+				title: 'Motion you can turn off',
+				body: 'Honours prefers-reduced-motion. Or flip the switch and the whole page holds still.',
+				on: 'Motion on',
+				off: 'Motion off',
+				yours: 'Yours'
+			}
+		},
 		projects: [
 			{
 				name: 'v-rap',
@@ -293,7 +429,7 @@ const en: SiteContent = {
 	},
 	domains: {
 		kicker: 'Nine years, six domains',
-		title: 'Where the work has actually been',
+		title: 'Where the work\nhas actually been',
 		lede: 'Regulated finance, hospital equipment, consumer audio, lending at scale, internal platforms. Different constraints, same job: make it correct and make it ship.',
 		items: [
 			{
@@ -340,10 +476,12 @@ const en: SiteContent = {
 	},
 	contact: {
 		kicker: 'Contact',
-		title: 'Tell me what you are building',
+		title: 'Tell me what\nyou are *building.*',
 		lede: 'If you need someone who can take an AI feature from an idea to a thing on a server, without a handoff in the middle — write to me.',
 		availability: 'Open to full-time remote or contract',
 		overlap: 'Based UTC+8. A full European working day overlaps; so does US East in my evening.',
+		cta: 'Email me',
+		sent: 'Talk soon ✦',
 		emailLabel: 'Email',
 		githubLabel: 'GitHub',
 		blogLabel: 'Blog',
@@ -352,7 +490,14 @@ const en: SiteContent = {
 		cvFile: 'Dongsheng-Zhao-CV.pdf',
 		footer: 'Built with SvelteKit by the person it is about. No trackers, no analytics.'
 	},
-	a11y: { langToggle: 'Switch to Chinese', toTop: 'Back to top', sectionNav: 'Section navigation' }
+	footer: { giant: 'DONGSHENG', time: 'Hefei' },
+	cursor: { hue: 'Hue', play: 'Play', decode: 'Decode', write: 'Write', open: 'Open' },
+	a11y: {
+		langToggle: 'Switch to Chinese',
+		toTop: 'Back to top',
+		sectionNav: 'Section navigation',
+		palette: 'Switch colour palette'
+	}
 };
 
 const zh: SiteContent = {
@@ -370,19 +515,22 @@ const zh: SiteContent = {
 		oss: '开源生态',
 		play: 'Playground',
 		domains: '领域',
-		contact: '联系'
+		contact: '联系',
+		cv: '简历'
 	},
+	loader: { label: 'DZ / 启动', ready: '你好' },
 	hero: {
 		eyebrow: 'Sveltepress 作者 · 539 star',
 		name: '赵东升',
+		headline: '赵东升\n*Dongsheng Zhao.*',
 		title: 'AI 全栈工程师 · 9 年经验',
-		lede: '我把 LLM 放进生产系统：合规报告由 Claude 与 OpenAI 起草，底下是多链风控引擎，外面包一层开放 API，上面是工作台。设计、开发、测试、部署，一个人走完。',
+		sub: '我把 LLM 放进生产系统，并负责它周围的一切：引擎、API、工作台、部署。',
 		availability: '可接全职远程 / 合同制',
 		place: 'UTC+8 · 合肥 · 可用英语开会',
 		ctaPrimary: '看我的作品',
 		ctaSecondary: '给我写信',
-		scroll: '向下滚动',
-		hint: { stir: '移动光标搅动 · 点击泛起涟漪', tap: '轻触泛起涟漪' },
+		hint: '移动光标，液态金属会跟着你',
+		hud: { fps: '帧率', scale: '渲染比例', gpu: 'GPU', palette: '配色' },
 		stats: [
 			{ value: '9', label: '年工程经验' },
 			{ value: '747', label: 'GitHub star' },
@@ -390,46 +538,85 @@ const zh: SiteContent = {
 			{ value: '4', label: '开源组织' }
 		]
 	},
+	manifesto: {
+		kicker: '我怎么做事',
+		text: '我把 *LLM* 放进*生产*系统：合规报告由 Claude 与 OpenAI 起草，底下是多链风控引擎，外面包一层开放 API，上面是工作台。设计、开发、测试、部署，*一个人*走完。'
+	},
+	engine: {
+		kicker: '从头到尾',
+		hint: '滚动变形 · 移动环绕',
+		stages: [
+			{
+				label: '01 / 设计',
+				title: '从两个字母开始。',
+				body: '24,000 个粒子取样自我名字的缩写，跑在你的 GPU 上。继续往下滚：这是一个功能从头走到尾的样子。'
+			},
+			{
+				label: '02 / 开发',
+				title: '然后它有了形状。',
+				body: '模型调用、引擎、API、工作台。整条栈在一个人手里，交接里就不会丢东西。'
+			},
+			{
+				label: '03 / 测试',
+				title: '然后它得扛得住。',
+				body: '一个 (2,3) 环面纽结。每个粒子按自己的延迟出发，湍流在半途最强——边界情况也是这样。'
+			},
+			{
+				label: '04 / 上线',
+				title: '然后它走进世界。',
+				body: '三条旋臂，叠加混合，零贴图。移动光标，全是实时的。'
+			}
+		]
+	},
 	production: {
 		kicker: '正在做的事',
-		title: '把 LLM 放进加密合规平台',
+		title: '把 LLM 放进\n加密合规平台',
 		context:
 			'一家加密货币 AML/KYT 合规 SaaS。我负责 AI 层，以及它下面的整条栈——筛查引擎、开放 API、工作台，还有把它送上服务器的那套流水线。',
 		bullets: [
 			{
+				tag: 'LLM',
 				head: '合规文书交给模型写',
 				body: '把链上风险数据与规则命中喂给 Claude 和 OpenAI，自动起草 STR/SAR 报告、合规政策与规则集草案，替代原本人工撰写的环节。'
 			},
 			{
+				tag: '筛查',
 				head: 'KYA / KYT 筛查引擎',
 				body: '多跳资金路径回溯，识别高风险交易对手、制裁与黑名单命中，输出分级风险判定。'
 			},
 			{
+				tag: '规则',
 				head: '可配置规则集',
 				body: '按存款、取款、CDD、持续监控等场景分流的路径级检测，合规团队改策略不需要发版。'
 			},
 			{
+				tag: 'API',
 				head: '对外开放 API(v2 / v3)',
 				body: '异步轮询加 API Key 鉴权，地址监控告警、Webhook、配额计费，覆盖 Ethereum、Tron 与 Base。'
 			},
 			{
+				tag: '工作台',
 				head: '合规工作台',
 				body: 'Next.js 16 + React 19 + TypeScript：筛查、批量检测、图谱探索、报告与监控，状态用 SWR 与 Zustand。'
 			},
 			{
+				tag: '运维',
 				head: '上线并且守住',
 				body: '主导整体云迁移，搭建 GitHub Actions CI/CD——Go 二进制原子替换、多份备份、秒级回滚——并负责生产故障排查。'
 			}
 		],
 		highlight: {
+			tag: '亮点',
 			head: '重写路径调查链路',
-			body: '从全量路径上传改成服务端检测 + gzip 并行分页拉取，单次筛查耗时显著下降。'
+			body: '从全量路径上传改成服务端检测 + gzip 并行分页拉取，单次筛查耗时显著下降。',
+			chips: ['服务端检测', 'gzip', '并行分页']
 		}
 	},
 	agents: {
 		kicker: '开源 · AI 与 Agent',
-		title: '把活交给 Agent，再确认它真的做完了',
+		title: '把活交给 Agent，\n再确认它真的做完了',
 		lede: '我大部分时间泡在编码 Agent 里，缺什么就自己补什么。',
+		terminal: '~/work — codsh',
 		projects: [
 			{
 				name: 'deskfolk',
@@ -471,8 +658,13 @@ const zh: SiteContent = {
 	},
 	oss: {
 		kicker: '开源 · Svelte 生态',
-		title: 'Sveltepress，以及围绕它长出来的东西',
+		title: 'Sveltepress，\n以及围绕它长出来的东西',
 		lede: '2022 年 8 月至今持续维护。我 GitHub 上大部分 star 来自这里。',
+		demo: {
+			title: '在 Markdown 里直接写 Svelte',
+			body: '计数器是真的 Svelte 组件，不是一张截图。这正是 Sveltepress 的卖点，演示当然得是真的。',
+			clickable: '真的能点'
+		},
 		projects: [
 			{
 				name: 'Sveltepress',
@@ -507,10 +699,32 @@ const zh: SiteContent = {
 			}
 		]
 	},
+	stats: { label: '数字' },
 	play: {
 		kicker: 'Playground',
-		title: '纯粹因为好玩才写的',
+		title: '纯粹因为\n好玩才写的',
 		lede: '有几个的 star 比正经项目还多。我已经接受了。',
+		page: {
+			fps: {
+				tag: '本页',
+				title: '逐帧实测',
+				body: '这是你的浏览器此刻真实的帧时间线。整站所有特效由同一个 requestAnimationFrame 循环驱动。'
+			},
+			weight: {
+				tag: '本页',
+				title: '到手就称重',
+				body: '这次访问实际下载的压缩字节。没有动画库：两个 WebGL 程序加一个物理循环。',
+				unit: 'KB'
+			},
+			motion: {
+				tag: '本页',
+				title: '动效可以关掉',
+				body: '遵循系统的 prefers-reduced-motion 设置；也可以拨动开关，让整页静止。',
+				on: '动效开',
+				off: '动效关',
+				yours: '你的设置'
+			}
+		},
 		projects: [
 			{
 				name: 'v-rap',
@@ -548,7 +762,7 @@ const zh: SiteContent = {
 	},
 	domains: {
 		kicker: '九年，六个领域',
-		title: '这些年活儿到底干在哪',
+		title: '这些年活儿\n到底干在哪',
 		lede: '强监管金融、医院设备、消费音频、规模化信贷、内部平台。约束各不相同，要做的事是同一件：做对，然后让它上线。',
 		items: [
 			{
@@ -595,10 +809,12 @@ const zh: SiteContent = {
 	},
 	contact: {
 		kicker: '联系',
-		title: '说说你在做什么',
+		title: '说说你\n在做*什么。*',
 		lede: '如果你需要一个能把 AI 功能从想法一路推到服务器上、中间不用交接的人，写信给我。',
 		availability: '可接全职远程 / 合同制',
 		overlap: '常驻 UTC+8。欧洲整个工作日可以重叠，美东在我的晚上也能对上。',
+		cta: '给我写信',
+		sent: '回头聊 ✦',
 		emailLabel: '邮箱',
 		githubLabel: 'GitHub',
 		blogLabel: '博客',
@@ -607,7 +823,14 @@ const zh: SiteContent = {
 		cvFile: 'Dongsheng-Zhao-CV-zh.pdf',
 		footer: '本页由本人用 SvelteKit 写成。无埋点，无统计脚本。'
 	},
-	a11y: { langToggle: '切换到英文', toTop: '回到顶部', sectionNav: '章节导航' }
+	footer: { giant: '赵东升', time: '合肥时间' },
+	cursor: { hue: '配色', play: '玩', decode: '解码', write: '写信', open: '打开' },
+	a11y: {
+		langToggle: '切换到英文',
+		toTop: '回到顶部',
+		sectionNav: '章节导航',
+		palette: '切换配色'
+	}
 };
 
 export const content: Record<Lang, SiteContent> = { en, zh };
