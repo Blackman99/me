@@ -101,10 +101,14 @@ smooth signed-distance field, marched 64 steps per pixel and shaded as
 iridescent chrome against a procedural studio. The headline is a variable font;
 each letter thickens as the cursor nears it.
 
-**The particle engine** holds 24,000 points with four destinations each: the
-initials, a sphere, a (2,3) torus knot and a three-armed galaxy. Scrolling picks
-where they are between two shapes; the vertex shader gives every point its own
-delay and a burst of turbulence mid-flight.
+**The particle engine** holds 24,000 points with four destinations each, one
+per stage of shipping a feature: the initials as vector outlines on an artboard
+(design), the stack exploded into its four layers (build), a magnifier over a
+bug (test) and a rocket at lift-off (ship). Scrolling picks where they are
+between two shapes; the vertex shader gives every point its own delay and a
+burst of turbulence mid-flight, then keeps each shape alive once it lands — the
+stack breathes and data climbs its risers, the lens drifts, the exhaust
+streams and stars rush past.
 
 **The palette is live.** The button beside the language switch (or the `p` key)
 cycles four palettes with a circular view transition; the CSS accents and both
@@ -112,21 +116,19 @@ shaders change together, and the choice is remembered.
 
 **Language hops tear down cleanly.** `/` and `/zh/` share one component.
 Moving between them is a client-side navigation: the effects module removes
-every listener, observer, timer and GL context it made, and the new page skips
-the boot loader.
+every listener, observer, timer and GL context it made.
 
 **Full-screen paging is gone.** The old site snapped section by section; the
 manifesto, the particle engine and the open-source track are each several
 screens of scroll on purpose, which snapping would fight.
 
-Measured on the build: the home page is 82 KB gzipped — HTML, CSS and JS,
+Measured on the build: the home page is 84 KB gzipped — HTML, CSS and JS,
 fonts excluded.
 
-**`prefers-reduced-motion` is a real path.** The loader shortens to a blink, the
-clock that drives the shaders, marquee and spring stops, reveals appear without
-sliding or blurring, and every CSS animation is paused. The motion switch in the
-Playground does the same on demand. Without JavaScript the loader never shows
-and every word is visible.
+**`prefers-reduced-motion` is a real path.** The clock that drives the shaders,
+marquee and spring stops, reveals appear without sliding or blurring, and every
+CSS animation is paused. The motion switch in the Playground does the same on
+demand. Without JavaScript every word is visible.
 
 **The Sveltepress demo is a live Svelte component**, not a screenshot of one —
 the counter in the open-source track really counts.

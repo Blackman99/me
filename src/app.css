@@ -30,7 +30,6 @@
 		serif;
 	--mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
 	--ease: cubic-bezier(0.16, 1, 0.3, 1);
-	--ease-io: cubic-bezier(0.77, 0, 0.18, 1);
 	--pad: clamp(20px, 4vw, 64px);
 
 	/* Names the two hand-drawn figures were written against. */
@@ -147,82 +146,7 @@ em {
 	white-space: nowrap;
 }
 
-/* ------------------------------------------- chrome: loader, grain, cursor */
-.loader {
-	position: fixed;
-	inset: 0;
-	z-index: 300;
-	background: #000;
-	display: flex;
-	flex-direction: column;
-	justify-content: space-between;
-	padding: var(--pad);
-	clip-path: inset(0 0 0 0);
-	transition: clip-path 1.1s var(--ease-io);
-	/* If the script never runs, the curtain still lifts. */
-	animation: failsafe 0s linear 6s forwards;
-}
-.loader.done {
-	clip-path: inset(0 0 100% 0);
-	pointer-events: none;
-}
-.loader.gone {
-	display: none;
-}
-@keyframes failsafe {
-	to {
-		visibility: hidden;
-	}
-}
-.loader-top {
-	display: flex;
-	justify-content: space-between;
-	gap: 24px;
-	color: var(--mute);
-}
-.loader-top ol {
-	text-align: right;
-	display: grid;
-	gap: 6px;
-}
-.loader-top li {
-	opacity: 0;
-	transform: translateY(6px);
-	animation: logIn 0.5s var(--ease) forwards;
-	animation-delay: calc(var(--i) * 190ms + 150ms);
-}
-.loader-top li b {
-	color: var(--fg);
-	font-weight: 500;
-}
-@keyframes logIn {
-	to {
-		opacity: 1;
-		transform: none;
-	}
-}
-.loader-num {
-	font-weight: 600;
-	font-size: clamp(96px, 22vw, 360px);
-	line-height: 0.8;
-	letter-spacing: -0.06em;
-	font-variant-numeric: tabular-nums;
-}
-.loader-bar {
-	height: 1px;
-	margin-top: 28px;
-	background: var(--line);
-	position: relative;
-	overflow: hidden;
-}
-.loader-bar i {
-	position: absolute;
-	inset: 0;
-	background: linear-gradient(90deg, var(--a1), var(--a2), var(--a3));
-	transform-origin: left;
-	transform: scaleX(var(--p, 0));
-}
-
+/* --------------------------------------------------- chrome: grain, cursor */
 .grain {
 	position: fixed;
 	inset: -50%;
@@ -2246,7 +2170,6 @@ html.still *::after {
 	mix-blend-mode: normal;
 }
 @media print {
-	.loader,
 	.grain,
 	.cursor,
 	.nav,

@@ -1,4 +1,4 @@
-import { initHero, initParticles, N } from './gl';
+import { initHero, initParticles } from './gl';
 import { PALETTES, hex2rgb } from './shaders';
 
 /*
@@ -10,10 +10,6 @@ import { PALETTES, hex2rgb } from './shaders';
  */
 
 export interface FxOptions {
-	/** Play the boot loader. Only the first page of a visit does. */
-	intro: boolean;
-	glyph: string;
-	ready: string;
 	motion: { on: string; off: string };
 	cta: { idle: string; sent: string };
 }
@@ -84,7 +80,6 @@ export function mountFx(o: FxOptions): () => void {
 		time: 0,
 		fps: 60
 	};
-	const bootLog: [string, string][] = [];
 
 	/* ------------------------------------------------------------ palettes */
 	let palIdx = 0;
@@ -139,11 +134,7 @@ export function mountFx(o: FxOptions): () => void {
 	const heroBottom = $('#heroBottom')!;
 	const glCv = $<HTMLCanvasElement>('#gl')!;
 	const hero = initHero(glCv);
-	if (hero) bootLog.push(['webgl2', hero.gpu], ['raymarch.frag', `compiled · ${hero.ms} ms`]);
-	else {
-		glCv.classList.add('nogl');
-		bootLog.push(['webgl2', 'unavailable · css fallback']);
-	}
+	if (!hero) glCv.classList.add('nogl');
 	const gpuEl = $('#gpu');
 	if (gpuEl) gpuEl.textContent = hero ? hero.gpu : 'n/a';
 	undo.push(() => hero?.destroy());
@@ -155,52 +146,29 @@ export function mountFx(o: FxOptions): () => void {
 	const mfSec = $('#manifesto')!;
 	const mfWords = $$('.wd', mfSec);
 
-	/* ---------------------------------------------------------------- loader */
-	const loader = $('#loader')!;
-	const ln = $('#ln')!;
-	const finishBoot = () => {
-		bootLog.push(['dom', `${document.getElementsByTagName('*').length} nodes`], ['ready', o.ready]);
-		const log = $('#bootLog');
-		if (log)
-			log.innerHTML = bootLog
-				.map((l, i) => `<li style="--i:${i}">${l[0]} · <b>${l[1].replace(/</g, '&lt;')}</b></li>`)
-				.join('');
-	};
-
-	// The glyph is drawn in the display face, so wait (briefly) for it.
+	/* ---------------------------------------------------------------- intro */
+	// The particle shapes are sampled off the critical path: the engine is
+	// a screen and a half below the fold.
+	const idle = window.requestIdleCallback ?? ((fn: () => void) => window.setTimeout(fn, 200));
+	idle(
+		() => {
+			if (!alive) return;
+			parts = initParticles($<HTMLCanvasElement>('#pgl')!);
+			undo.push(() => parts?.destroy());
+		},
+		{ timeout: 1500 }
+	);
+	// The headline rises in the display face, so it waits (briefly) for it
+	// rather than swapping fonts mid-flight.
 	const fontsReady = Promise.race([document.fonts.ready, new Promise((r) => setTimeout(r, 700))]);
 	fontsReady.then(() => {
 		if (!alive) return;
-		const font = getComputedStyle(root).getPropertyValue('--sans').trim() || 'sans-serif';
-		parts = initParticles($<HTMLCanvasElement>('#pgl')!, o.glyph, font);
-		if (parts) bootLog.push(['particles.vert', `${N.toLocaleString('en-US')} points · ${parts.ms} ms`]);
-		undo.push(() => parts?.destroy());
-		finishBoot();
-	});
-
-	const ready = () => {
-		root.classList.add('ready');
-		S.ready = true;
-	};
-	if (o.intro) {
-		const LOAD_MS = S.motion ? 1700 : 150;
-		const loadStart = performance.now();
-		const tickLoader = (now: number) => {
+		requestAnimationFrame(() => {
 			if (!alive) return;
-			const t = clamp((now - loadStart) / LOAD_MS, 0, 1);
-			const e = 1 - Math.pow(1 - t, 3);
-			ln.textContent = String(Math.round(e * 100)).padStart(3, '0');
-			loader.style.setProperty('--p', String(e));
-			if (t < 1) return void requestAnimationFrame(tickLoader);
-			loader.classList.add('done');
-			later(ready, S.motion ? 280 : 0);
-			later(() => loader.classList.add('gone'), 1400);
-		};
-		requestAnimationFrame(tickLoader);
-	} else {
-		loader.classList.add('done', 'gone');
-		requestAnimationFrame(() => alive && ready());
-	}
+			root.classList.add('ready');
+			S.ready = true;
+		});
+	});
 	undo.push(() => root.classList.remove('ready', 'fine', 'still'));
 
 	/* ---------------------------------------------------------------- cursor */
@@ -807,17 +775,24 @@ export function mountFx(o: FxOptions): () => void {
 			const fl = Math.min(Math.floor(raw), 2);
 			const target = p >= 1 ? 3 : fl + smooth(0.3, 0.8, raw - fl);
 			mo.m = lerp(mo.m, target, damp(dt, 4.5));
-			if (S.motion) mo.spin += dt * 0.22 * smooth(0.3, 1, mo.m);
-			if (mo.m < 0.35) mo.spin -= Math.atan2(Math.sin(mo.spin), Math.cos(mo.spin)) * damp(dt, 3);
-			const tilts = [0, 0.35, 0.5, 1.05];
+			// Each shape has its own camera: the artboard head-on, the stack from
+			// above at three quarters, the lens swaying, the rocket rolling.
+			if (S.motion) mo.spin += dt * 0.45 * smooth(2.3, 3, mo.m);
+			if (mo.m < 2.3) mo.spin -= Math.atan2(Math.sin(mo.spin), Math.cos(mo.spin)) * damp(dt, 3);
+			const tilts = [0, -0.72, 0.04, 0.14];
+			const yaws = [0, 0.55, 0, 0];
+			const sways = [0, 0.16, 0.34, 0];
 			const i0 = Math.min(Math.floor(mo.m), 2);
-			const tilt = lerp(tilts[i0], tilts[i0 + 1], smooth(0, 1, mo.m - i0));
+			const e = smooth(0, 1, mo.m - i0);
+			const tilt = lerp(tilts[i0], tilts[i0 + 1], e);
+			const yaw =
+				lerp(yaws[i0], yaws[i0 + 1], e) + Math.sin(S.time * 0.5) * lerp(sways[i0], sways[i0 + 1], e) + mo.spin;
 			pm.x = lerp(pm.x, S.moved ? S.mx / S.W - 0.5 : 0, damp(dt, 3));
 			pm.y = lerp(pm.y, S.moved ? S.my / S.H - 0.5 : 0, damp(dt, 3));
 			const look = 0.35 + 0.65 * smooth(0, 1, mo.m);
 			parts?.render({
 				m: mo.m,
-				spin: mo.spin + pm.x * 1.1 * look,
+				spin: yaw + pm.x * 1.1 * look,
 				tilt: tilt + pm.y * 0.6 * look,
 				time: S.time,
 				dpr: S.dpr,

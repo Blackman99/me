@@ -1,11 +1,5 @@
-<script module lang="ts">
-	// Only the first page of a visit plays the boot loader; hopping between
-	// languages afterwards goes straight to the page.
-	let booted = false;
-</script>
-
 <script lang="ts">
-	import { BLOG, EMAIL, GITHUB, GLYPH, SITE_URL, SVELTEPRESS, content, type Lang } from '$lib/content';
+	import { BLOG, EMAIL, GITHUB, SITE_URL, SVELTEPRESS, content, type Lang } from '$lib/content';
 	import { mountFx } from '$lib/fx';
 	import { odometer } from '$lib/text';
 	import Agents from './Agents.svelte';
@@ -86,15 +80,10 @@
 	});
 
 	$effect(() => {
-		const stop = mountFx({
-			intro: !booted,
-			glyph: GLYPH,
-			ready: c.loader.ready,
+		return mountFx({
 			motion: { on: c.play.page.motion.on, off: c.play.page.motion.off },
 			cta: { idle: c.contact.cta, sent: c.contact.sent }
 		});
-		booted = true;
-		return stop;
 	});
 </script>
 
@@ -135,13 +124,6 @@
 	{@html `<script type="application/ld+json">${jsonLd}</scr` + `ipt>`}
 </svelte:head>
 
-<div class="loader" id="loader" aria-hidden="true">
-	<div class="loader-top mono"><span>{c.loader.label}</span><ol id="bootLog"></ol></div>
-	<div>
-		<div class="loader-num" id="ln">000</div>
-		<div class="loader-bar"><i></i></div>
-	</div>
-</div>
 <div class="grain" aria-hidden="true"></div>
 <div class="progress" id="progress" aria-hidden="true"></div>
 <div class="cursor" id="cursor" aria-hidden="true">

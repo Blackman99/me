@@ -90,24 +90,46 @@ void main(){
 /**
  * Particles: every point carries four destinations; the vertex shader picks
  * where it is between two of them, each point on its own delay, with
- * turbulence that peaks halfway.
+ * turbulence that peaks halfway. Once landed, the tags in aK keep each shape
+ * alive (see shapes.ts): the stack breathes and data climbs its risers, the
+ * lens drifts over the bug, the exhaust streams and stars rush past.
  */
 export const VS_PTS = `#version 300 es
 precision highp float;
 layout(location=0) in vec3 aP0; layout(location=1) in vec3 aP1;
 layout(location=2) in vec3 aP2; layout(location=3) in vec3 aP3;
-layout(location=4) in float aR;
+layout(location=4) in float aR; layout(location=5) in vec4 aK;
 uniform float uMorph, uTime, uSize, uAsp, uFit, uTilt, uSpin;
 uniform vec3 uA, uB, uC;
 out vec3 vCol; out float vA;
 vec3 A, B, C;
+float heat=0., fade=1.;
+const float NOZ=-.62;
 ${TRI}
-vec3 shape(float i){ return i<.5?aP0:i<1.5?aP1:i<2.5?aP2:aP3; }
+vec3 build(){
+  float b=.5+.5*sin(uTime*.8);
+  if(aK.y>3.5){ float h=1.14+.21*b; return vec3(aP1.x,-h+fract(aP1.z+uTime*.16)*2.*h,aP1.y); }
+  return aP1+vec3(0.,(aK.y-1.5)*.14*b,0.);
+}
+vec3 test(){ return aP2+aK.z*vec3(sin(uTime*.6)*.12,sin(uTime*.95)*.08,0.); }
+vec3 ship(){
+  if(aK.w<.5) return aP3;
+  if(aK.w<1.5){
+    float ph=fract(aP3.z+uTime*.55), r=(.2+ph*.5)*aP3.y, a=aP3.x+ph*2.;
+    heat=(1.-ph)*(1.-.6*aP3.y); fade=1.-ph;
+    return vec3(cos(a)*r,NOZ-ph*1.6,sin(a)*r);
+  }
+  float ph=fract(aP3.z+uTime*.16);
+  fade=.6*sin(ph*3.14159265);
+  return vec3(aP3.x,2.8-ph*5.6,aP3.y);
+}
+vec3 shape(float i){ return i<.5?aP0:i<1.5?build():i<2.5?test():ship(); }
 void main(){
   A=uA; B=uB; C=uC;
   float m=clamp(uMorph,0.,3.), i0=min(floor(m),2.), f=m-i0;
   float st=clamp((f-aR*.35)/.65,0.,1.); st=st*st*(3.-2.*st);
   vec3 p=mix(shape(i0),shape(i0+1.),st);
+  float s0=i0<.5?1.-st:0., s3=i0>1.5?st:0.;
   float k=sin(st*3.14159265);
   p+=k*.55*vec3(sin(aR*91.+uTime*.9+p.y*1.7),cos(aR*57.+uTime*.7+p.z*1.9),sin(aR*33.+uTime*1.1+p.x*1.5));
   p+=.02*vec3(sin(uTime*1.3+aR*40.),cos(uTime*1.1+aR*30.),sin(uTime*.9+aR*20.));
@@ -118,9 +140,10 @@ void main(){
   gl_Position=vec4(p.x*1.9/uAsp, p.y*1.9, 0., z);
   gl_PointSize=uSize*(.55+aR*.95)/z;
   vec3 c=tri(aR*.4+p.y*.12+uMorph*.22+uTime*.03);
-  c=mix(c,vec3(1.),.5*exp(-dot(p,p)*1.4)*smoothstep(2.,3.,uMorph));
+  c=mix(c,vec3(1.),.6*aK.x*s0);
+  c=mix(c,vec3(1.,.95,.88),.85*heat*heat*s3);
   vCol=c;
-  vA=(.5+.5*k)*smoothstep(9.,3.6,z);
+  vA=(.5+.5*k)*smoothstep(9.,3.6,z)*mix(1.,fade,s3);
 }`;
 
 export const FS_PTS = `#version 300 es

@@ -51,7 +51,6 @@ export interface SiteContent {
 		contact: string;
 		cv: string;
 	};
-	loader: { label: string; ready: string };
 	hero: {
 		eyebrow: string;
 		name: string;
@@ -161,9 +160,6 @@ export const MARQUEE = [
 	'PostgreSQL'
 ];
 
-/** The particle engine starts as these letters. */
-export const GLYPH = 'DZ';
-
 const en: SiteContent = {
 	locale: 'en',
 	meta: {
@@ -183,7 +179,6 @@ const en: SiteContent = {
 		contact: 'Contact',
 		cv: 'CV'
 	},
-	loader: { label: 'DZ / boot', ready: 'hello' },
 	hero: {
 		eyebrow: 'Creator of Sveltepress · 539 stars',
 		name: 'Dongsheng Zhao',
@@ -213,23 +208,23 @@ const en: SiteContent = {
 		stages: [
 			{
 				label: '01 / Design',
-				title: 'It starts as two letters.',
-				body: '24,000 particles sampled from my initials, running on your GPU. Keep scrolling: this is a feature going end to end.'
+				title: 'It starts on the artboard.',
+				body: 'My initials as vector outlines — anchors, handles, guides — drawn by 24,000 particles on your GPU. Keep scrolling: this is one feature going end to end.'
 			},
 			{
 				label: '02 / Build',
 				title: 'Then it takes shape.',
-				body: 'Model calls, engine, API, workbench. With the whole stack in one pair of hands, nothing is lost in a handoff.'
+				body: 'Four layers, bottom to top: model calls, engine, API, workbench. Data climbs straight up the stack, and with all of it in one pair of hands, nothing is lost in a handoff.'
 			},
 			{
 				label: '03 / Test',
-				title: 'Then it has to hold together.',
-				body: 'A (2,3) torus knot. Every particle leaves on its own delay, with turbulence that peaks mid-flight — like the edge cases.'
+				title: 'Then I hunt the bugs.',
+				body: 'The lens has to find them before a user does. Every particle leaves on its own delay, with turbulence that peaks mid-flight — that is where the edge cases hide.'
 			},
 			{
 				label: '04 / Ship',
 				title: 'Then it goes out into the world.',
-				body: 'Three spiral arms, additive blending, zero textures. Move your cursor: it is all live.'
+				body: 'Lift-off. The exhaust streams in the vertex shader, additive blending, zero textures. Move your cursor: it is all live.'
 			}
 		]
 	},
@@ -518,7 +513,6 @@ const zh: SiteContent = {
 		contact: '联系',
 		cv: '简历'
 	},
-	loader: { label: 'DZ / 启动', ready: '你好' },
 	hero: {
 		eyebrow: 'Sveltepress 作者 · 539 star',
 		name: '赵东升',
@@ -548,23 +542,23 @@ const zh: SiteContent = {
 		stages: [
 			{
 				label: '01 / 设计',
-				title: '从两个字母开始。',
-				body: '24,000 个粒子取样自我名字的缩写，跑在你的 GPU 上。继续往下滚：这是一个功能从头走到尾的样子。'
+				title: '从画板上开始。',
+				body: '名字缩写的矢量轮廓：锚点、手柄、参考线，由 24,000 个粒子在你的 GPU 上画出来。继续往下滚：这是一个功能从头走到尾的样子。'
 			},
 			{
 				label: '02 / 开发',
 				title: '然后它有了形状。',
-				body: '模型调用、引擎、API、工作台。整条栈在一个人手里，交接里就不会丢东西。'
+				body: '从下到上四层：模型调用、引擎、API、工作台。数据沿着整条栈往上走；整条栈在一个人手里，交接里就不会丢东西。'
 			},
 			{
 				label: '03 / 测试',
-				title: '然后它得扛得住。',
-				body: '一个 (2,3) 环面纽结。每个粒子按自己的延迟出发，湍流在半途最强——边界情况也是这样。'
+				title: '然后去抓 bug。',
+				body: '放大镜得赶在用户之前找到它们。每个粒子按自己的延迟出发，湍流在半途最强——边界情况就藏在那里。'
 			},
 			{
 				label: '04 / 上线',
 				title: '然后它走进世界。',
-				body: '三条旋臂，叠加混合，零贴图。移动光标，全是实时的。'
+				body: '点火升空。尾焰在顶点着色器里流动，叠加混合，零贴图。移动光标，全是实时的。'
 			}
 		]
 	},
